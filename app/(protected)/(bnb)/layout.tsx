@@ -1,4 +1,4 @@
-import {BottomNavigationBar} from "@/components/BottomNav";
+import {BottomNavigationBar} from "@/app/(protected)/(bnb)/components/BottomNav";
 
 export default async function BNBLayout({ children }: { children: React.ReactNode }) {
 

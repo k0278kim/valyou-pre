@@ -16,6 +16,15 @@ import {TextChatCard} from "@/app/(protected)/(chat)/chat/[persona]/components/T
 import {LoadingIndicatorChat} from "@/app/(protected)/(chat)/chat/[persona]/components/LoadingIndicatorChat";
 import {BottomChat} from "@/app/(protected)/(chat)/chat/[persona]/components/BottomChat";
 import {PutBlobResult} from "@vercel/blob";
+import {FetchResponseType} from "@/app/(protected)/(chat)/chat/[persona]/type/fetchResponseType";
+import {
+  fetchChatAnalyzePrompt,
+  fetchChatInitPrompt,
+  fetchPhotoPrompt
+} from "@/app/(protected)/(chat)/chat/[persona]/utils/fetchChatPrompt";
+import {fetchPersonaAvatar} from "@/app/(protected)/(chat)/chat/[persona]/utils/fetchPersonaAvatar";
+import {ChatType} from "@/app/(protected)/(chat)/chat/[persona]/type/chat";
+import Header from "@/app/(protected)/(chat)/chat/[persona]/components/Header";
 
 type HistoryPart = {
   role: "user" | "model";
@@ -42,7 +51,7 @@ export default function PersonaChat({
   const [chatAnalyzePrompt, setChatAnalyzePrompt] = useState("");
   const [personaCharacter, setPersonaCharacter] = useState<Persona | null>(null);
   const [input, setInput] = useState("");
-  const [messages, setMessages] = useState<string[]>([]);
+  const [messages, setMessages] = useState<ChatType[]>([]);
   const [loading, setLoading] = useState(false);
   const [avatar, setAvatar] = useState<string | null>(null);
   const [photo, setPhoto] = useState<string | null>(null);
@@ -62,12 +71,11 @@ export default function PersonaChat({
     event.preventDefault();
     if (!file) return;
 
-    // 1. 파일 이름과 함께 API Route에 POST 요청
     const response = await fetch(
       `/api/upload?filename=${file.name}`,
       {
         method: 'POST',
-        body: file, // 2. 파일 자체를 body에 담아 전송
+        body: file,
       }
     );
 
@@ -75,78 +83,48 @@ export default function PersonaChat({
     setBlob(newBlob);
   };
 
-  useEffect(() => {
-    const fetchChatAnalyzePrompt = async () => {
-      const { data, error } = await supabase
-        .from("prompts")
-        .select("*")
-        .eq("type", "CHAT_ANALYZE")
-        .maybeSingle()
-
-      if (error) console.error("chat analyze prompt fetch error:", error);
-      else setChatAnalyzePrompt(data?.prompt ?? "");
-    }
-    fetchChatAnalyzePrompt();
+  useEffect(() => { // '분석 채팅 답변 생성' 프롬프트 불러오기
+    fetchChatAnalyzePrompt(supabase).then((response: FetchResponseType | undefined) => {
+      if (response) {
+        if (response.status === "success") setChatAnalyzePrompt(response.message);
+      }
+    });
   }, []);
 
-  useEffect(() => {
-    const fetchPhotoPrompt = async () => {
-      const { data, error } = await supabase
-        .from("prompts")
-        .select("*")
-        .eq("type", "PHOTO")
-        .maybeSingle();
-
-      if (error) console.error("photo prompt fetch error:", error);
-      else setPhotoPrompt(data?.prompt ?? ""); // 💡 data가 null일 경우 대비
-    };
-    fetchPhotoPrompt();
+  useEffect(() => { // '사진 분석' 프롬프트 불러오기
+    fetchPhotoPrompt(supabase).then((response: FetchResponseType | undefined) => {
+      if (response) {
+        if (response.status === "success") setPhotoPrompt(response.message);
+      }
+    });
   }, [supabase]);
 
-  useEffect(() => {
-    const fetchChatInitPrompt = async () => {
-      const { data, error } = await supabase
-        .from("prompts")
-        .select("*")
-        .eq("type", "CHAT_INIT")
-        .maybeSingle();
-
-      if (error) console.error("photo prompt fetch error:", error);
-      else setChatInitPrompt(data?.prompt ?? ""); // 💡 data가 null일 경우 대비
-    }
-    fetchChatInitPrompt();
+  useEffect(() => { // '채팅 분석' 프롬프트 불러오기 (ANALYZE | CHAT)
+    fetchChatInitPrompt(supabase).then((response: FetchResponseType | undefined) => {
+      if (response) {
+        if (response.status === "success") setChatInitPrompt(response.message);
+      }
+    });
   }, []);
 
-  // ✅ Supabase에서 avatar_image 불러오기
   useEffect(() => {
-    const fetchPersonaAvatar = async () => {
-      const { data, error } = await supabase
-        .from("personas")
-        .select("*")
-        .eq("name", persona)
-        .maybeSingle();
-
-      setPersonaCharacter(data);
-
-      if (error) console.error("❌ persona fetch error:", error);
-      else setAvatar(data?.avatar_image ?? null);
-    };
-
-    fetchPersonaAvatar();
+    fetchPersonaAvatar(supabase, persona).then((response: FetchResponseType | undefined) => {
+      if (response) {
+        if (response.status === "success") setPersonaCharacter(response.message);
+        console.log(response.message);
+      }
+    })
   }, [persona, supabase]);
 
   useEffect(() => {
-    // 💡 behavior: "auto" 또는 "instant"가 더 즉각적일 수 있습니다.
     bottomRef.current?.scrollIntoView();
   }, [messages, loading]);
 
-  // 💡 🚀 Init Message 버그 수정 및 최적화된 fetchMessages
   useEffect(() => {
     const SIGNED_URL_EXPIRES_IN = 60;
 
     const fetchMessages = async () => {
-      // 💡 1. (수정) init_message를 먼저 포맷합니다.
-      const formattedInitMessage = `PERSONA__${personaCharacter!.init_message!}`;
+      const formattedInitMessage: ChatType = { type: "CHAT", role: "persona", content: personaCharacter!.init_message!, photo: null };
 
       const { data, error } = await supabase
         .from("conversations")
@@ -156,17 +134,17 @@ export default function PersonaChat({
 
       if (error) {
         console.error("error", error, user?.id);
-        setMessages([formattedInitMessage]); // 💡 에러가 나도 init 메시지는 표시
-        setHasFetchedMessages(true); // 💡 실행 완료로 표시
+        setMessages([{ role: "persona", content: personaCharacter!.init_message!, type: "CHAT", photo: null }]);
+        setHasFetchedMessages(true);
         return;
       }
 
       if (data) {
-        const photoMessages = data.filter((d) => d.type === "PHOTO" && d.photo);
+        const photoMessages: ChatType[] = data.filter((d) => d.type === "PHOTO" && d.photo);
         const signedUrlPromises = photoMessages.map((d) =>
           supabase.storage
             .from("photos")
-            .createSignedUrl(d.photo, SIGNED_URL_EXPIRES_IN)
+            .createSignedUrl(d.photo!, SIGNED_URL_EXPIRES_IN)
         );
         const signedUrlResults = await Promise.all(signedUrlPromises);
 
@@ -175,26 +153,28 @@ export default function PersonaChat({
           const originalPath = photoMessages[index].photo;
           if (result.error || !result.data) {
             console.error("Signed URL 생성 실패:", originalPath, result.error);
-            urlMap.set(originalPath, null);
+            urlMap.set(originalPath!, null);
           } else {
-            urlMap.set(originalPath, result.data.signedUrl);
+            urlMap.set(originalPath!, result.data.signedUrl);
           }
         });
 
         // 메시지 배열 생성
 
-        let mes: string[] = [];
+        console.log("data", data);
+
+        let mes: ChatType[] = [];
         for (let i = 0; i < data.length; i++) {
           if (data[i].type === "PHOTO") {
             const signedUrl = urlMap.get(data[i].photo);
             if (signedUrl) {
-              mes.push(`PHOTO__${signedUrl}__${data[i].content}`);
+              mes.push({ type: "PHOTO", role: "user", content: data[i].content, photo: signedUrl });
             } else {
-              mes.push(`PHOTO__/placeholder.png__${data[i].content}`);
+              mes.push({ type: "PHOTO", role: "user", content: data[i].content, photo: "/placeholder.png" });
             }
           } else {
             if (data[i].role === "user") {
-              mes.push(`USER__${data[i].content}`);
+              mes.push({ type: "CHAT", role: "user", content: data[i].content, photo: null });
             } else {
               if (data[i].type === "ANALYZE") {
                 const cleanedString = data[i].content
@@ -202,12 +182,12 @@ export default function PersonaChat({
                   .replaceAll("`", "")
                   .trim();
                 const finalJsonObject = JSON.parse(cleanedString);
-                const resultArray = Object.entries(finalJsonObject).filter(([key, value]) => value != "").map(([key, value]) => {
-                  return `PERSONA__[${key}] ${value}`
+                const resultArray: ChatType[] = Object.entries(finalJsonObject).filter(([key, value]) => value != "").map(([key, value]) => {
+                  return { type: "CHAT", role: "persona", content: `deep_chat__${key}__${value}`, photo: null }
                 });
                 mes = [...mes, ...resultArray];
               } else {
-                mes.push(`PERSONA__${data[i].content}`);
+                mes.push({ type: "CHAT", role: "persona", content: data[i].content, photo: null });
               }
             }
           }
@@ -221,17 +201,20 @@ export default function PersonaChat({
         setHistory(
           allMessages
             .slice(Math.max(allMessages.length - 5, 0)) // 음수 인덱스 방지
-            .filter((m) => m.startsWith("USER__"))
-            .map((m) => {
+            .filter((m: ChatType) => m.role === "user")
+            .map((m: ChatType) => {
               return {
                 role: "user",
-                parts: [{ text: m.split("__")[1] }],
+                parts: [{ text: m.content }],
               } as HistoryPart;
             })
         );
 
-        const photosMetadata = mes.filter((m) => m.startsWith("PHOTO__"));
-        setCurrentPhotoMetadata(photosMetadata[photosMetadata.length - 1]);
+        const photosMetadata = mes.filter((m) => m.type === "PHOTO");
+        console.log(mes, photosMetadata)
+        if (photosMetadata.length > 0) {
+          setCurrentPhotoMetadata(photosMetadata[photosMetadata.length - 1].content);
+        }
       } else {
         // 데이터가 null일 경우
         setMessages([formattedInitMessage]);
@@ -253,7 +236,7 @@ export default function PersonaChat({
   const sendPhoto = useCallback(
     async (photo: string) => {
       setCurrentPhotoMetadata(null);
-      setMessages((m) => [...m, `PHOTO__${photo}`]);
+      setMessages((m) => [...m, { type: "PHOTO", role: "user", content: "", photo: photo }]);
       // setCard({
       //   question: "어떤 스타일을 입어야 할지 모르겠나요?",
       //   answer: ["잘 알고 있어요!", "모르겠어요..."]
@@ -288,7 +271,6 @@ export default function PersonaChat({
           if (line.trim() === '') continue;
           try {
             const update = JSON.parse(line);
-            console.log('중간 결과:', update);
             if (update.status === 'uploading') {
               setPhotoLoadingStatus(update.message);
             }
@@ -312,7 +294,6 @@ export default function PersonaChat({
     [personaCharacter, photoPrompt, supabase] // 💡 supabase 의존성 추가
   );
 
-  // 💡 🚀 useCallback으로 함수를 메모이제이션합니다.
   const sendMessage = useCallback(async () => {
     if (!input.trim()) return;
 
@@ -321,7 +302,7 @@ export default function PersonaChat({
       { role: "user", parts: [{ text: input }] },
     ];
     setHistory(newHistory);
-    setMessages((m) => [...m, `USER__${input}`]);
+    setMessages((m) => [...m, { type: "CHAT", role: "user", content: input, photo: null }]);
     setLoading(true);
 
     setInput("");
@@ -363,8 +344,8 @@ export default function PersonaChat({
         .replaceAll("`", "")
         .trim();
       const finalJsonObject = JSON.parse(cleanedString);
-      const resultArray = Object.entries(finalJsonObject).filter(([key, value]) => value != "").map(([key, value]) => {
-        return `PERSONA__[${key}] ${value}`
+      const resultArray: ChatType[] = Object.entries(finalJsonObject).filter(([key, value]) => value != "").map(([key, value]) => {
+        return { type: "CHAT", role: "persona", content: `deep_chat__${key}__${value}`, photo: null }
       });
       setLoading(false);
 
@@ -382,7 +363,7 @@ export default function PersonaChat({
 
       const data = await res.json();
       setLoading(false);
-      if (data.reply) setMessages((m) => [...m, `PERSONA__${data.reply}`]);
+      if (data.reply) setMessages((m) => [...m, { type: "CHAT", role: "persona", content: data.reply, photo: null }]);
     }
   }, [input, history, personaCharacter, user, currentPhotoMetadata, supabase]);
 
@@ -391,7 +372,6 @@ export default function PersonaChat({
   // ======================================================================
   return pageState === "DEFAULT" ? (
       <div className="flex flex-col h-full mx-auto relative">
-        {/* 상단 헤더 */}
         {
           card && <div className={"bg-black/30 w-full h-full absolute top-0 left-0 z-40 "}></div>
         }
@@ -415,40 +395,13 @@ export default function PersonaChat({
             </div>
           </motion.div>
         }
-        <div className="text-xl font-bold p-4 bg-blue-200 flex items-center space-x-3 border-b border-[#afcbea]">
-          <button
-            className={"w-8 h-8 rounded-full flex items-center justify-center"}
-            onClick={() => router.back()}
-          >
-            <Image src={"/chat/arrow-left.svg"} alt={""} width={20} height={20} />
-          </button>
-          {avatar ? (
-            <div className={"w-10 h-10 rounded-full relative"}><Image
-              src={avatar}
-              alt={`${persona} avatar`}
-              fill
-              className="rounded-full object-cover"
-            /></div>
-          ) : (
-            <div
-              className={
-                "w-[40px] h-[40px] bg-gray-100 rounded-full flex items-center justify-center"
-              }
-            >
-              <Image src={"/chat/user.svg"} alt={""} width={25} height={25} />
-            </div>
-          )}
-          <p>{personaCharacter?.display_name}</p>
-        </div>
+        <Header personaCharacter={personaCharacter} />
 
         {/* 대화 영역 */}
         <div className="flex-1 overflow-y-auto p-3 bg-blue-200 flex flex-col space-y-5">
           {messages.map((m, i) => {
-            const parts = m.split("__");
-            const type = parts[0]; // "USER", "PERSONA", "PHOTO"
-            const text = parts[1]; // 사진 URL 또는 메시지 텍스트
-            const isUser = type === "USER";
-            const isPhoto = type === "PHOTO";
+            const isUser = m.role === "user";
+            const isPhoto = m.type === "PHOTO";
 
             return (
               <div
@@ -459,8 +412,8 @@ export default function PersonaChat({
               >
                 {isPhoto ? (
                   <PhotoChatCard
-                    text={text} // URL
-                    metadata={m}
+                    text={m.photo ? m.photo : ""} // URL
+                    metadata={m.content}
                     current={i === messages.length - 1}
                     photoLoading={photoLoading}
                     currentPhotoMetadata={currentPhotoMetadata}
@@ -469,9 +422,8 @@ export default function PersonaChat({
                 ) : (
                   <TextChatCard
                     isUser={isUser}
-                    avatar={avatar}
-                    persona={personaCharacter!.display_name}
-                    text={text}
+                    personaCharacter={personaCharacter}
+                    text={m.content}
                   />
                 )}
               </div>

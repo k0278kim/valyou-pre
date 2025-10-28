@@ -19,16 +19,13 @@ export const PhotoChatCard = React.memo(function PhotoChatCard({
                                                           photoLoading,
   photoLoadingStatus
                                                         }: PhotoChatCardType) {
-  const parts = metadata ? metadata.split("__") : "";
-  console.log(parts);
   const [blur, setBlur] = useState(true);
-  const part = parts.length > 2 ? parts[2] : "";
-  const cleanedString = parts.length > 2 ? part
+  const cleanedString = metadata ? metadata
     .replaceAll("```json", "")
     .replaceAll("`", "")
     .replaceAll("[이미지 분석 결과]:", "")
     .trim() : "";
-  const finalJsonObject = parts.length > 2 ? JSON.parse(cleanedString) : { summary : currentPhotoMetadata };
+  const finalJsonObject = metadata ? JSON.parse(cleanedString) : { summary : currentPhotoMetadata };
   return (
     <div className={"w-full flex items-end flex-col"}>
       <div
@@ -50,7 +47,7 @@ export const PhotoChatCard = React.memo(function PhotoChatCard({
           }
         >
           {photoLoading && current ? (
-            <div className={"flex flex-col items-center"}>
+            <div className={"flex flex-col items-center justify-center w-full h-full bg-black/30 rounded-2xl"}>
               <div className={"w-7 h-7 z-20"}>
                 <CircularLoader />
               </div>

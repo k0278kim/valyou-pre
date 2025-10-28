@@ -1,25 +1,25 @@
 import React from "react";
 import Image from "next/image";
+import {Persona} from "@/model/Persona";
 
 export const TextChatCard = React.memo(function TextChatCard({
                                                         isUser,
-                                                        avatar,
-                                                        persona,
                                                         text,
+  personaCharacter
                                                       }: {
   isUser: boolean;
-  avatar: string | null;
-  persona: string;
   text: string;
+  personaCharacter: Persona | null;
 }) {
+  const deepChat = text.startsWith("deep_chat");
   return (
     <div className="flex space-x-2.5 max-w-[80%]">
       {/* 페르소나 프로필 이미지 */}
       {!isUser &&
-        (avatar ? (
+        (personaCharacter?.avatar_image ? (
           <Image
-            src={avatar}
-            alt={`${persona} avatar`}
+            src={personaCharacter.avatar_image}
+            alt={`${personaCharacter.display_name} avatar`}
             width={56}
             height={56}
             className="rounded-2xl h-fit"
@@ -35,13 +35,15 @@ export const TextChatCard = React.memo(function TextChatCard({
         ))}
 
       <div className="flex flex-col space-y-2.5 flex-1">
-        {!isUser && <p className="font-semibold">{persona}</p>}
+        {!isUser && <p className="font-semibold">{personaCharacter?.display_name}</p>}
         <div
           className={`w-fit px-4 py-2 rounded-2xl ${
             isUser ? "bg-yellow-300 ml-auto" : "bg-white"
           }`}
         >
-          <p className="whitespace-pre-line">{text}</p>
+          { deepChat && <p className={"text-lg font-semibold"}>{text.split("__")[1].replaceAll("_", " ")}</p> }
+          { deepChat && <div className={"w-full h-[1px] border-b border-gray-200 my-2.5"}></div> }
+          <p className="whitespace-pre-line">{deepChat ? text.split("__")[2] : text}</p>
         </div>
       </div>
     </div>
