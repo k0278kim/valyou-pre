@@ -17,7 +17,7 @@ export const BottomChat = ({ loading, input, setPageState, setInput, sendMessage
     <div className={"flex space-x-2.5"}>
       <button
         onClick={() => setPageState("CAMERA")}
-        className="h-full aspect-square border border-gray-300 rounded-full flex items-center justify-center"
+        className={`h-full aspect-square border border-gray-300 rounded-full flex items-center justify-center ${loading && "opacity-50"}`}
         disabled={loading}
       >
         <Image src={"/chat/camera.svg"} alt={""} width={20} height={20} />
@@ -31,7 +31,7 @@ export const BottomChat = ({ loading, input, setPageState, setInput, sendMessage
           required
         />
         <button
-          className="h-full aspect-square border border-gray-300 rounded-full flex items-center justify-center"
+          className={`h-full aspect-square border border-gray-300 rounded-full flex items-center justify-center ${loading && "opacity-50"}`}
           disabled={loading}
         >
           <Image src={"/chat/photo.svg"} alt={""} width={20} height={20} />
@@ -46,11 +46,11 @@ export const BottomChat = ({ loading, input, setPageState, setInput, sendMessage
       <button
         onClick={sendMessage}
         className={`h-full aspect-square rounded-full flex items-center justify-center ${
-          input == "" ? "bg-gray-300 opacity-50" : "bg-yellow-300"
+          input == "" ? "bg-gray-300 opacity-50" : "bg-gray-800"
         }`}
         disabled={loading || input == ""}
       >
-        <Image src={"/chat/airplane.svg"} alt={""} width={20} height={20} />
+        <Image src={loading || input == "" ? "/chat/airplane.svg" : "/chat/airplane-white.svg"} alt={""} width={20} height={20} className={`duration-200 ${!(loading || input == "") && "-rotate-45"}`} />
       </button>
     </div>
   </div>;
