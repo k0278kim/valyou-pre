@@ -8,6 +8,7 @@ type PhotoChatCardType = {
   current: boolean;
   photoLoading: boolean;
   currentPhotoMetadata: string|null;
+  photoLoadingStatus: string;
 };
 
 export const PhotoChatCard = React.memo(function PhotoChatCard({
@@ -16,6 +17,7 @@ export const PhotoChatCard = React.memo(function PhotoChatCard({
                                                           current,
                                                           currentPhotoMetadata,
                                                           photoLoading,
+  photoLoadingStatus
                                                         }: PhotoChatCardType) {
   const parts = metadata ? metadata.split("__") : "";
   console.log(parts);
@@ -48,8 +50,11 @@ export const PhotoChatCard = React.memo(function PhotoChatCard({
           }
         >
           {photoLoading && current ? (
-            <div className={"w-10 h-10 z-20"}>
-              <CircularLoader />
+            <div className={"flex flex-col items-center"}>
+              <div className={"w-7 h-7 z-20"}>
+                <CircularLoader />
+              </div>
+            { (photoLoading && current) && <p className={"break-keep p-2.5 text-sm mt-2.5 text-white/60"}>{photoLoadingStatus}</p> }
             </div>
           ) : (
             blur && <div className={"flex flex-col items-center space-y-2.5"}>

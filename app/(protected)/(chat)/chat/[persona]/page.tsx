@@ -53,6 +53,7 @@ export default function PersonaChat({
   const [card, setCard] = useState<QuestionCard | null>(null);
   const [currentPhotoMetadata, setCurrentPhotoMetadata] = useState<string | null>(null);
   const [hasFetchedMessages, setHasFetchedMessages] = useState(false);
+  const [photoLoadingStatus, setPhotoLoadingStatus] = useState("");
 
   const router = useRouter();
   const supabase = useSupabaseClient();
@@ -253,12 +254,12 @@ export default function PersonaChat({
     async (photo: string) => {
       setCurrentPhotoMetadata(null);
       setMessages((m) => [...m, `PHOTO__${photo}`]);
-      setCard({
-        question: "어떤 스타일을 입어야 할지 모르겠나요?",
-        answer: ["잘 알고 있어요!", "모르겠어요..."]
-      });
+      // setCard({
+      //   question: "어떤 스타일을 입어야 할지 모르겠나요?",
+      //   answer: ["잘 알고 있어요!", "모르겠어요..."]
+      // });
 
-      const res = await fetch("/api/chat_photo", {
+      const response = await fetch("/api/chat_photo", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -267,15 +268,46 @@ export default function PersonaChat({
           prompt: photoPrompt,
         }),
       });
-      const data = await res.json();
-      const reply = data.reply;
-      const cleanedString = reply
-        .replaceAll("```json", "")
-        .replaceAll("`", "")
-        .trim();
-      const finalJsonObject = JSON.parse(cleanedString);
-      setCurrentPhotoMetadata(finalJsonObject.summary);
-      console.log(data);
+
+      if (!response.body) {
+        setLoading(false);
+        return;
+      }
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+
+      let accumulatedChunks = '';
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        accumulatedChunks += decoder.decode(value, { stream: true });
+        const lines = accumulatedChunks.split('\n');
+        accumulatedChunks = lines.pop() || '';
+        for (const line of lines) {
+          if (line.trim() === '') continue;
+          try {
+            const update = JSON.parse(line);
+            console.log('중간 결과:', update);
+            if (update.status === 'uploading') {
+              setPhotoLoadingStatus(update.message);
+            }
+            if (update.status === 'complete') {
+              const jsonObject = update.message;
+              console.log(jsonObject);
+              if (!jsonObject) throw new Error("cannot fetch photo analyze result.")
+              const cleanedString = jsonObject
+                .replaceAll("```json", "")
+                .replaceAll("`", "")
+                .trim();
+              const finalJsonObject = JSON.parse(cleanedString);
+              setCurrentPhotoMetadata(finalJsonObject.summary);
+            }
+          } catch (e) {
+            console.error('Stream parsing error:', e, line);
+          }
+        }
+      }
     },
     [personaCharacter, photoPrompt, supabase] // 💡 supabase 의존성 추가
   );
@@ -432,6 +464,7 @@ export default function PersonaChat({
                     current={i === messages.length - 1}
                     photoLoading={photoLoading}
                     currentPhotoMetadata={currentPhotoMetadata}
+                    photoLoadingStatus={photoLoadingStatus}
                   />
                 ) : (
                   <TextChatCard
