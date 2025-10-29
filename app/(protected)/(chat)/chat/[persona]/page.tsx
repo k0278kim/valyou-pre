@@ -412,7 +412,7 @@ export default function PersonaChat({
   }, [input, history, personaCharacter, user, currentPhotoMetadata, supabase]);
 
   return pageState === "DEFAULT" ? (
-      <div className="flex flex-col h-dvh w-dvw mx-auto relative">
+      <div className="flex flex-col h-dvh w-full mx-auto relative">
         {
           card && <div className={"bg-black/30 w-full h-full absolute top-0 left-0 z-40 "}></div>
         }
@@ -480,7 +480,7 @@ export default function PersonaChat({
         </div>
 
         {/* 하단 입력창 */}
-        <div className={"w-dvw h-fit"}>
+        <div className={"w-full h-fit"}>
           <BottomChat
             loading={loading}
             input={input}
