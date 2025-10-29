@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
     });
 
     const chat = model.startChat({
-      history: history.slice(history.length - 5 >= 0 ? history.length - 5 : 0, -1) as Content[],
+      history: history.slice(history.length - 5 >= 1 ? history.length - 5 : 1, -1) as Content[],
     });
 
     // 7. 마지막 메시지(현재 메시지) 전송

@@ -41,7 +41,7 @@ export const BottomChat = ({ loading, input, setPageState, setInput, sendMessage
         value={input}
         onChange={(e) => setInput(e.target.value)}
         placeholder="메시지 입력"
-        className="flex-1 px-5 py-3 rounded-full focus:outline-none bg-gray-100"
+        className="flex-1 px-5 py-3 w-full rounded-full focus:outline-none bg-gray-100"
       />
       <button
         onClick={sendMessage}
