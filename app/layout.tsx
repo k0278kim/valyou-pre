@@ -17,7 +17,7 @@ export default function RootLayout({
       <body
         className={`antialiased`}
       >
-        <SupabaseProvider><div className={"w-screen h-screen bg-black flex justify-center"}>
+        <SupabaseProvider><div className={"w-dvw h-dvh bg-black flex justify-center"}>
           <div className={"w-full md:max-w-[500px] h-screen bg-white"}>
             {children}
           </div>

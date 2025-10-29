@@ -6,12 +6,14 @@ export default function GoogleSignInButton() {
   const supabase = createClient()
 
   const handleGoogleLogin = async () => {
+    const redirectURL = `${location.origin}/auth/callback`;
+    console.log("Redirecting to:", redirectURL); // 이 로그 확인!
     await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
         // 이 URL은 Google 로그인 후 사용자가 돌아올 앱의 경로입니다.
         // /auth/callback 라우트를 다음 단계에서 만듭니다.
-        redirectTo: `${location.origin}/auth/callback`,
+        redirectTo: redirectURL,
       },
     })
   }
