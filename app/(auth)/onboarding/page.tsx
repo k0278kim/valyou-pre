@@ -1,8 +1,9 @@
-const OnboardingPage = () => {
-  return <div className={"w-full h-full"}>
-    Onboarding
-    { /* 이 페이지에 작성 */ }
-  </div>
-}
+import OnboardingClient from './OnboardingClient'
 
-export default OnboardingPage;
+export default function OnboardingPage() {
+  return (
+    <div className="w-full h-full">
+      <OnboardingClient />
+    </div>
+  )
+}
