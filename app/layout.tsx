@@ -14,15 +14,18 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`antialiased`}
-      >
-        <SupabaseProvider><div className={"w-dvw h-dvh bg-black flex justify-center"}>
-          <div className={"w-full md:max-w-[500px] h-screen bg-white"}>
-            {children}
-          </div>
-        </div></SupabaseProvider>
-      </body>
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+    <body
+      className={`antialiased`}
+    >
+    <SupabaseProvider>
+      <div className={"w-svw min-h-[100dvh] bg-black flex justify-center"}>
+        <div className={"w-full md:max-w-[500px] h-dvh bg-white"}>
+          {children}
+        </div>
+      </div>
+    </SupabaseProvider>
+    </body>
     </html>
   );
 }

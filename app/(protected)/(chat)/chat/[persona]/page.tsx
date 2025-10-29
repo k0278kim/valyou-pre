@@ -415,7 +415,7 @@ export default function PersonaChat({
   // 6. JSX 렌더링
   // ======================================================================
   return pageState === "DEFAULT" ? (
-      <div className="flex flex-col h-full mx-auto relative">
+      <div className="flex flex-col h-dvh mx-auto relative">
         {
           card && <div className={"bg-black/30 w-full h-full absolute top-0 left-0 z-40 "}></div>
         }

@@ -24,6 +24,8 @@ export async function POST(req: NextRequest) {
           error: authError,
         } = await supabase.auth.getUser();
 
+        sendJsonUpdate({ status: "uploading", message: "사용자 위변조 확인 중..." });
+
         if (authError || !user) {
           console.error("Authentication Error:", authError);
           // Send specific error via stream before closing

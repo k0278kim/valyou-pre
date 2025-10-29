@@ -35,5 +35,5 @@ export default async function ProtectedLayout({ children }: { children: React.Re
   }
 
   // 4. 인증O, 프로필O 사용자만 통과
-  return <div className={"w-full h-screen"}>{children}</div>;
+  return <div className={"w-full h-100svh"}>{children}</div>;
 }
