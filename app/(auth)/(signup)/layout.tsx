@@ -12,7 +12,7 @@ export default async function SignUpLayout({ children }: { children: React.React
   const { data: { user }, error: authError } = await supabase.auth.getUser();
 
   if (authError || !user) {
-    redirect("/login");
+    redirect("/onboarding");
   }
 
   // 2. (추가) 프로필 정보 확인

@@ -21,7 +21,7 @@ export default function CompleteSignupPage() {
       const { data: { user } } = await supabase.auth.getUser();
 
       if (!user) {
-        router.push("/login");
+        router.push("/onboarding");
         return;
       }
 

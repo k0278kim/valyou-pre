@@ -12,7 +12,7 @@ export default async function ProtectedLayout({ children }: { children: React.Re
   const { data: { user }, error: authError } = await supabase.auth.getUser();
 
   if (authError || !user) {
-    redirect("/login");
+    redirect("/onboarding");
   }
 
   // 2. (추가) 프로필 정보 확인
@@ -26,7 +26,7 @@ export default async function ProtectedLayout({ children }: { children: React.Re
   if (!profile && profileError && profileError.code !== 'PGRST116') {
     console.error("Error fetching profile in layout:", profileError)
     // 에러 페이지로 리디렉션하거나 로그인 페이지로 보낼 수 있습니다.
-    redirect("/login?error=profile_fetch_failed");
+    redirect("/onboarding?error=profile_fetch_failed");
   }
 
   // 3. (중요) 프로필이 없는 사용자 리디렉션

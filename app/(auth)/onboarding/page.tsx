@@ -1,4 +1,4 @@
-import OnboardingClient from './OnboardingClient'
+import OnboardingClient from './components/OnboardingClient'
 
 export default function OnboardingPage() {
   return (

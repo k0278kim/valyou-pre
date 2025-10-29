@@ -44,7 +44,7 @@ const ProfilePage = () => {
           height={25}
           onClick={async () => {
             await supabase.auth.signOut();
-            router.replace("/login");
+            router.replace("/onboarding");
           }}
         />
       </div>
