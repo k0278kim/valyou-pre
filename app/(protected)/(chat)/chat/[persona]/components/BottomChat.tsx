@@ -21,12 +21,11 @@ export const BottomChat = ({
                              setFile,
                            }: BottomChatProps) => {
   return (
-    // SafeArea 고려 (선택 사항)
     <div className="flex flex-col p-3 bg-white w-full">
-      <div className={"flex space-x-2.5 items-center"}>
+      <div className={"flex space-x-2.5 items-center w-full"}>
         <button
           onClick={() => setPageState("CAMERA")}
-          className={`shrink-0 h-12 w-12 border border-gray-300 rounded-full flex items-center justify-center ${
+          className={`shrink-0 h-14 w-14 border border-gray-300 rounded-full flex items-center justify-center ${
             loading && "opacity-50"
           }`}
           disabled={loading}
@@ -54,17 +53,17 @@ export const BottomChat = ({
         </form>
         --- 파일 업로드 버튼 끝 --- */}
 
-        <input
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder="메시지 입력"
-          // 💡 표준 높이 (h-12) 및 min-w-0 적용
-          className="flex-1 px-5 py-3 rounded-full h-12 focus:outline-none bg-gray-100"
-        />
+        <div className={"flex-1"}>
+          <input
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder="메시지 입력"
+            className="w-full px-5 py-3 rounded-full h-14 focus:outline-none bg-gray-100"
+          />
+        </div>
         <button
           onClick={sendMessage}
-          // 💡 표준 크기 (h-12 w-12) 및 shrink-0 적용
-          className={`shrink-0 h-12 w-12 rounded-full flex items-center justify-center ${
+          className={`shrink-0 h-14 w-14 rounded-full flex items-center justify-center ${
             input === "" ? "bg-gray-300 opacity-50" : "bg-gray-800"
           }`}
           disabled={loading || input === ""}
