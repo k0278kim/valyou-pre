@@ -411,11 +411,8 @@ export default function PersonaChat({
     }
   }, [input, history, personaCharacter, user, currentPhotoMetadata, supabase]);
 
-  // ======================================================================
-  // 6. JSX 렌더링
-  // ======================================================================
   return pageState === "DEFAULT" ? (
-      <div className="flex flex-col h-dvh mx-auto relative">
+      <div className="flex flex-col h-dvh w-dvw mx-auto relative">
         {
           card && <div className={"bg-black/30 w-full h-full absolute top-0 left-0 z-40 "}></div>
         }
@@ -483,15 +480,17 @@ export default function PersonaChat({
         </div>
 
         {/* 하단 입력창 */}
-        <BottomChat
-          loading={loading}
-          input={input}
-          setInput={setInput}
-          sendMessage={sendMessage}
-          setPageState={setPageState}
-          handleSubmit={handleSubmit}
-          setFile={setFile}
-        />
+        <div className={"w-dvw h-fit"}>
+          <BottomChat
+            loading={loading}
+            input={input}
+            setInput={setInput}
+            sendMessage={sendMessage}
+            setPageState={setPageState}
+            handleSubmit={handleSubmit}
+            setFile={setFile}
+          />
+        </div>
       </div>
     ) : // ==================================================================
     // 카메라 UI (변경 없음)
