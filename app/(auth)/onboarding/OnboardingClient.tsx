@@ -1,6 +1,7 @@
 "use client"
 
 import React, { useEffect, useState, useRef } from 'react'
+import Image from 'next/image'
 
 type Slide = { title: string; subtitle: string }
 
@@ -23,7 +24,7 @@ const SLIDES: Slide[] = [
   }
 ]
 
-export default function OnboardingClient(): JSX.Element {
+export default function OnboardingClient() {
   const [index, setIndex] = useState<number>(0)
   const [showLogin, setShowLogin] = useState<boolean>(false)
 
@@ -78,18 +79,15 @@ export default function OnboardingClient(): JSX.Element {
             <div key={i} className="w-full flex-shrink-0 flex flex-col items-center text-center gap-4 px-4">
               {/* visual: 배경 이미지 + 스캔 라인 */}
               <div className={`relative w-full h-48 rounded-lg overflow-hidden bg-gray-100`}>
-                <div className={`absolute inset-0 ${
-                  i === 0 ? 'bg-gradient-to-br from-purple-600 to-blue-500' :
-                  i === 1 ? 'bg-gradient-to-br from-indigo-500 to-sky-400' :
-                  i === 2 ? 'bg-gradient-to-br from-emerald-400 to-teal-400' : 'bg-gradient-to-br from-yellow-300 to-red-400'
-                }`} />
+                <div className={`absolute relative inset-0 relative`}>
+                  <Image src={`/onboarding/onboarding${i + 1}.png`} alt={s.title} fill className={"object-cover"} />
+                </div>
                 {/* 스캔 라인 */}
                 <div className="absolute inset-0 pointer-events-none">
                   <div className="h-full w-full bg-[linear-gradient(rgba(255,255,255,0.06)_1px,transparent_1px)] bg-[length:100%_8px]" />
                 </div>
                 {/* 미세 데이터 그래픽 (간단한 원형/선) */}
                 <div className="absolute right-4 bottom-4 text-white text-xs opacity-90">
-                  분석 중...
                 </div>
               </div>
 
