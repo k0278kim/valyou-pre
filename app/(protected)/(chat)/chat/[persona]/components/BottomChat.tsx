@@ -22,7 +22,7 @@ export const BottomChat = ({
                            }: BottomChatProps) => {
   return (
     // SafeArea 고려 (선택 사항)
-    <div className="flex flex-col p-3 bg-white w-full pb-[calc(env(safe-area-inset-bottom,0px)+0.75rem)]">
+    <div className="flex flex-col p-3 bg-white w-full">
       <div className={"flex space-x-2.5 items-center"}>
         <button
           onClick={() => setPageState("CAMERA")}
