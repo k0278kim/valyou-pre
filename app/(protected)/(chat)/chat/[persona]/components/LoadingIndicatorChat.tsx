@@ -4,16 +4,15 @@ import React from "react";
 import {PulseLoader} from "react-spinners";
 
 type LoadingIndicatorChatProps = {
-  avatar: string | null;
   persona: string;
   personaCharacter: Persona | null;
 }
 
-export const LoadingIndicatorChat = ({ avatar, persona, personaCharacter }: LoadingIndicatorChatProps) => {
+export const LoadingIndicatorChat = ({ persona, personaCharacter }: LoadingIndicatorChatProps) => {
   return <div className={"flex space-x-2.5"}>
-    { (avatar ? (
+    { (personaCharacter?.avatar_image ? (
       <Image
-        src={avatar}
+        src={personaCharacter.avatar_image}
         alt={`${persona} avatar`}
         width={56}
         height={56}

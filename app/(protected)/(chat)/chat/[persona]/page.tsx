@@ -53,7 +53,6 @@ export default function PersonaChat({
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState<ChatType[]>([]);
   const [loading, setLoading] = useState(false);
-  const [avatar, setAvatar] = useState<string | null>(null);
   const [photo, setPhoto] = useState<string | null>(null);
   const [pageState, setPageState] = useState<"DEFAULT" | "CAMERA">("DEFAULT");
   const bottomRef = useRef<HTMLDivElement | null>(null);
@@ -119,6 +118,16 @@ export default function PersonaChat({
   useEffect(() => {
     bottomRef.current?.scrollIntoView();
   }, [messages, loading]);
+
+  useEffect(() => {
+    const histories: HistoryPart[] = messages.map((message) => {
+      return {
+        role: message.role === "user" ? "user" : "model",
+        parts: [{ text: message.content }],
+      }
+    });
+    setHistory(histories)
+  }, [messages]);
 
   useEffect(() => {
     const SIGNED_URL_EXPIRES_IN = 60;
@@ -198,17 +207,17 @@ export default function PersonaChat({
         setMessages(allMessages);
 
         // History 설정
-        setHistory(
-          allMessages
-            .slice(Math.max(allMessages.length - 5, 0)) // 음수 인덱스 방지
-            .filter((m: ChatType) => m.role === "user")
-            .map((m: ChatType) => {
-              return {
-                role: "user",
-                parts: [{ text: m.content }],
-              } as HistoryPart;
-            })
-        );
+        // setHistory(
+        //   allMessages
+        //     .slice(Math.max(allMessages.length - 5, 0)) // 음수 인덱스 방지
+        //     .filter((m: ChatType) => m.role === "user" || m.role === "persona")
+        //     .map((m: ChatType) => {
+        //       return {
+        //         role: "user",
+        //         parts: [{ text: m.content }],
+        //       } as HistoryPart;
+        //     })
+        // );
 
         const photosMetadata = mes.filter((m) => m.type === "PHOTO");
         console.log(mes, photosMetadata)
@@ -297,21 +306,33 @@ export default function PersonaChat({
   const sendMessage = useCallback(async () => {
     if (!input.trim()) return;
 
-    const newHistory: HistoryPart[] = [
-      ...history,
-      { role: "user", parts: [{ text: input }] },
-    ];
-    setHistory(newHistory);
+    // const newHistory: HistoryPart[] = [
+    //   ...history,
+    //   { role: "user", parts: [{ text: input }] },
+    // ];
+    // setHistory(newHistory);
     setMessages((m) => [...m, { type: "CHAT", role: "user", content: input, photo: null }]);
+    const newHistory = { role: "user", parts: [{ text: input }]};
     setLoading(true);
 
     setInput("");
+
+    // const resInit = await fetch("/api/chat_init", {
+    //   method: "POST",
+    //   headers: { "Content-Type": "application/json" },
+    //   body: JSON.stringify({
+    //     history: newHistory,
+    //     prompt: chatInitPrompt
+    //   })
+    // });
+
+    console.log("history", [...history, newHistory]);
 
     const resInit = await fetch("/api/chat_init", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        history: newHistory,
+        history: [...history, newHistory],
         prompt: chatInitPrompt
       })
     });
@@ -324,18 +345,31 @@ export default function PersonaChat({
       .trim();
     const finalJsonObject = JSON.parse(cleanedString);
     console.log(finalJsonObject.type)
-    if (finalJsonObject.type === "ANALYZE") {
-      const res = await fetch("/api/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          prompt: chatAnalyzePrompt,
-          persona: personaCharacter,
-          userId: user?.id,
-          history: newHistory,
-          currentPhotoMetadata: currentPhotoMetadata,
-        }),
-      });
+    // if (finalJsonObject.type === "ANALYZE") {
+    //   const res = await fetch("/api/chat", {
+    //     method: "POST",
+    //     headers: { "Content-Type": "application/json" },
+    //     body: JSON.stringify({
+    //       prompt: chatAnalyzePrompt,
+    //       persona: personaCharacter,
+    //       userId: user?.id,
+    //       history: newHistory,
+    //       currentPhotoMetadata: currentPhotoMetadata,
+    //     }),
+    //   });
+
+      if (finalJsonObject.type === "ANALYZE") {
+        const res = await fetch("/api/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            prompt: chatAnalyzePrompt,
+            persona: personaCharacter,
+            userId: user?.id,
+            history: history,
+            currentPhotoMetadata: currentPhotoMetadata,
+          }),
+        });
 
       const data = await res.json();
       const reply = data.reply;
@@ -351,15 +385,25 @@ export default function PersonaChat({
 
       if (data.reply) setMessages((m) => [...m, ...resultArray]);
     } else {
-      const res = await fetch("/api/light_chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          persona: personaCharacter,
-          userId: user?.id,
-          history: newHistory,
-        }),
-      });
+      // const res = await fetch("/api/light_chat", {
+      //   method: "POST",
+      //   headers: { "Content-Type": "application/json" },
+      //   body: JSON.stringify({
+      //     persona: personaCharacter,
+      //     userId: user?.id,
+      //     history: newHistory,
+      //   }),
+      // });
+
+        const res = await fetch("/api/light_chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            persona: personaCharacter,
+            userId: user?.id,
+            history: [...history, newHistory],
+          }),
+        });
 
       const data = await res.json();
       setLoading(false);
@@ -431,7 +475,6 @@ export default function PersonaChat({
           })}
           {loading && !photoLoading && (
             <LoadingIndicatorChat
-              avatar={avatar}
               persona={persona}
               personaCharacter={personaCharacter}
             />
