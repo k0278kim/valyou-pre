@@ -1,17 +1,6 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import SupabaseProvider from "@/context/SupabaseProvider";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -25,15 +14,18 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        <SupabaseProvider><div className={"w-screen h-screen bg-black flex justify-center"}>
-          <div className={"w-full md:max-w-[500px] h-screen bg-white"}>
-            {children}
-          </div>
-        </div></SupabaseProvider>
-      </body>
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+    <body
+      className={`antialiased`}
+    >
+    <SupabaseProvider>
+      <div className={"w-svw min-h-[100dvh] bg-black flex justify-center"}>
+        <div className={"w-full md:max-w-[500px] h-dvh bg-white"}>
+          {children}
+        </div>
+      </div>
+    </SupabaseProvider>
+    </body>
     </html>
   );
 }

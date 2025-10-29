@@ -6,16 +6,18 @@ import ChatListPage from "@/app/(protected)/(bnb)/chat-list/page";
 import {useEffect, useState} from "react";
 import {usePathname, useRouter} from "next/navigation";
 import ProfilePage from "@/app/(protected)/(bnb)/profile/page";
+import GalleryPage from "@/app/(protected)/(bnb)/gallery/page";
 
 export const BottomNavigationBar = () => {
 
   const router = useRouter();
 
   const pathname = usePathname();
-  const index = pathname === "/chat-list" ? 0 : 1;
+  const index = pathname === "/chat-list" ? 0 : pathname === "/gallery" ? 1 : 2;
 
   const navItems = [
     { name: "채팅", href: "/chat-list", page: <ChatListPage />, icon: "/bnb/chat.svg", selected_icon: "/bnb/chat-selected.svg" },
+    { name: "사진", href: "/gallery", page: <GalleryPage />, icon: "/bnb/gallery.svg", selected_icon: "/bnb/gallery-selected.svg" },
     { name: "프로필", href: "/profile", page: <ProfilePage />, icon: "/bnb/my.svg", selected_icon: "/bnb/my-selected.svg" }
   ];
 

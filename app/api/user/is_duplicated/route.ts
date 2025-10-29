@@ -1,10 +1,11 @@
 import { getToken } from "next-auth/jwt";
 import {NextRequest, NextResponse} from "next/server";
-import {supabase} from "@/lib/supabaseClient";
+import {createClient} from "@/utils/supabase/server";
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const email = searchParams.get("email");
+  const supabase = createClient();
 
   try {
     const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
@@ -15,9 +16,9 @@ export async function GET(req: NextRequest) {
     const emails = (await supabase.from("user").select("*").eq("email", email)).data;
 
     if (emails) {
-      return { content: emails.length === 0 };
+      return NextResponse.json({ content: emails.length === 0 });
     } else {
-      return { content: "통신 실패" };
+      return NextResponse.json({ content: "통신 실패" });
     }
 
   } catch (err) {

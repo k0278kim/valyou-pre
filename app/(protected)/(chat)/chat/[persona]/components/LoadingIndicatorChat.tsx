@@ -1,18 +1,18 @@
 import {Persona} from "@/model/Persona";
 import Image from "next/image";
 import React from "react";
+import {PulseLoader} from "react-spinners";
 
 type LoadingIndicatorChatProps = {
-  avatar: string | null;
   persona: string;
   personaCharacter: Persona | null;
 }
 
-export const LoadingIndicatorChat = ({ avatar, persona, personaCharacter }: LoadingIndicatorChatProps) => {
+export const LoadingIndicatorChat = ({ persona, personaCharacter }: LoadingIndicatorChatProps) => {
   return <div className={"flex space-x-2.5"}>
-    { (avatar ? (
+    { (personaCharacter?.avatar_image ? (
       <Image
-        src={avatar}
+        src={personaCharacter.avatar_image}
         alt={`${persona} avatar`}
         width={56}
         height={56}
@@ -30,15 +30,7 @@ export const LoadingIndicatorChat = ({ avatar, persona, personaCharacter }: Load
     <div className={"flex flex-col space-y-2.5"}>
       <p className={"font-semibold"}>{personaCharacter?.display_name}</p>
       <div className="rounded-full p-4 h-fit bg-white/30 flex space-x-2 w-fit">
-        <div
-          className={"w-2 aspect-square bg-gray-400 rounded-full"}
-        ></div>
-        <div
-          className={"w-2 aspect-square bg-gray-400 rounded-full"}
-        ></div>
-        <div
-          className={"w-2 aspect-square bg-gray-400 rounded-full"}
-        ></div>
+        <PulseLoader size={6} margin={2} color={"#405166"} />
       </div>
     </div>
   </div>

@@ -23,6 +23,8 @@ export async function GET(request: NextRequest) {
         throw new Error('프로필 조회 실패');
       }
 
+      console.log(origin, next);
+
       if (!userProfile) {
         return NextResponse.redirect(`${origin}/complete-signup`);
       }

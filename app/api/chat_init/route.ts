@@ -7,7 +7,7 @@ export async function POST(req: NextRequest) {
 
     // 4. Gemini 모델 생성 (동일)
     const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY!);
-    console.log(prompt)
+    console.log(prompt, history);
     const model = genAI.getGenerativeModel({
       model: "gemini-2.5-flash",
       systemInstruction: {
