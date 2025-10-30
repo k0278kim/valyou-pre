@@ -13,6 +13,7 @@ export default function CompleteSignupPage() {
   const [birthYear, setBirthYear] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [gender, setGender] = useState<"male"|"female">("male");
 
   const supabase = createClient();
 
@@ -55,6 +56,7 @@ export default function CompleteSignupPage() {
         nickname,
         birth_year: parseInt(birthYear, 10),
         avatar_url: avatarUrl,
+        gender: gender
       });
     } catch (err: any) {
       console.error("❌ Signup error:", err);
@@ -126,6 +128,11 @@ export default function CompleteSignupPage() {
               placeholder="예: 2003"
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black"
             />
+          </div>
+
+          <div className={"w-full flex"}>
+            <div onClick={() => setGender("male")} className={`cursor-pointer rounded-lg flex-1 p-2.5 flex items-center justify-center ${gender === "male" && "bg-black text-white"}`}>남성</div>
+            <div onClick={() => setGender("female")} className={`cursor-pointer rounded-lg flex-1 p-2.5 flex items-center justify-center ${gender === "female" && "bg-black text-white"}`}>여성</div>
           </div>
 
           {error && <p className="text-red-500 text-sm text-center">{error}</p>}

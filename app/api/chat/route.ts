@@ -9,6 +9,7 @@ export async function POST(req: NextRequest) {
 
     // 2. history의 마지막 메시지를 현재 메시지로 간주
     const lastMessage = history[history.length - 1];
+    console.log(lastMessage);
     if (!lastMessage || lastMessage.role !== 'user') {
       return NextResponse.json({ error: "Invalid history" }, { status: 400 });
     }

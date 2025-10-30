@@ -9,7 +9,7 @@ type HeaderProps = {
 
 const Header = ({ personaCharacter }: HeaderProps) => {
   const router = useRouter();
-  return <div className="text-xl font-bold p-4 bg-blue-200 flex items-center space-x-3 border-b border-[#afcbea]">
+  return <div className="text-xl font-bold p-4 bg-white flex items-center space-x-3 border-b border-gray-200">
     <button
       className={"w-8 h-8 rounded-full flex items-center justify-center"}
       onClick={() => router.back()}

@@ -11,6 +11,7 @@ const ChatListPage = () => {
 
   const [personas, setPersonas] = useState<Persona[]>([]);
   const supabase = createClient();
+  const router = useRouter();
 
   useEffect(() => {
     const fetchPersonas = async () => {
@@ -25,8 +26,18 @@ const ChatListPage = () => {
   }, []);
 
   return <div className={"w-full h-full bg-white px-2"}>
-    <p className={"p-5 my-5 font-bold text-center text-xl"}>스타일리스트</p>
+    <p className={"p-5 mt-5 font-bold text-center text-xl"}>스타일리스트</p>
     <div className={"flex flex-col space-y-2"}>
+      <div className={"w-full p-5 rounded-lg bg-gray-100 text-sm space-y-2 flex flex-col items-center mb-10"}>
+        <p className={"font-semibold"}>Valyou는 당신의 숨겨진 아름다움을 찾기 위해 최선을 다하고 있어요!</p>
+        <p className={"text-center"}>이 실험은 10.30-11.05 동안 운영합니다.</p>
+        <button className={"p-2.5 border border-gray-300 rounded-lg bg-white text-sm"} onClick={() => router.push("/communicate-with-devs")}>
+          <div className={"font-semibold flex items-center space-x-2"}>
+            <Image src={"/chat-list/envelope-open.svg"} alt={""} width={15} height={15} />
+            <p>다음 실험이 나오면 알려주세요!</p>
+          </div>
+        </button>
+      </div>
       {
         personas.map((persona, index) => <PersonaRoom key={index} persona={persona} index={index} />)
       }

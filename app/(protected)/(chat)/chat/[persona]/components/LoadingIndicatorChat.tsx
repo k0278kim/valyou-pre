@@ -11,13 +11,12 @@ type LoadingIndicatorChatProps = {
 export const LoadingIndicatorChat = ({ persona, personaCharacter }: LoadingIndicatorChatProps) => {
   return <div className={"flex space-x-2.5"}>
     { (personaCharacter?.avatar_image ? (
-      <Image
+      <div className={"w-[56px] h-[56px] rounded-2xl relative"}><Image
         src={personaCharacter.avatar_image}
-        alt={`${persona} avatar`}
-        width={56}
-        height={56}
-        className="rounded-2xl h-fit"
-      />
+        alt={`${personaCharacter.display_name} avatar`}
+        fill
+        className="rounded-2xl h-fit object-cover"
+      /></div>
     ) : (
       <div
         className={
@@ -29,7 +28,7 @@ export const LoadingIndicatorChat = ({ persona, personaCharacter }: LoadingIndic
     )) }
     <div className={"flex flex-col space-y-2.5"}>
       <p className={"font-semibold"}>{personaCharacter?.display_name}</p>
-      <div className="rounded-full p-4 h-fit bg-white/30 flex space-x-2 w-fit">
+      <div className="rounded-full p-4 h-fit bg-white/30 border border-gray-300 flex space-x-2 w-fit">
         <PulseLoader size={6} margin={2} color={"#405166"} />
       </div>
     </div>

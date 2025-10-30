@@ -21,7 +21,7 @@ export const BottomChat = ({
                              setFile,
                            }: BottomChatProps) => {
   return (
-    <div className="flex flex-col p-3 bg-white w-full">
+    <div className="flex flex-col p-3 bg-white w-full border-t border-gray-200">
       <div className={"flex space-x-2.5 items-center w-full"}>
         <button
           onClick={() => setPageState("CAMERA")}
@@ -64,7 +64,7 @@ export const BottomChat = ({
         <button
           onClick={sendMessage}
           className={`shrink-0 h-14 w-14 rounded-full flex items-center justify-center ${
-            input === "" ? "bg-gray-300 opacity-50" : "bg-gray-800"
+            loading || input === "" ? "bg-gray-300 opacity-50" : "bg-gray-800"
           }`}
           disabled={loading || input === ""}
         >

@@ -6,13 +6,15 @@ export async function POST(req: NextRequest) {
   try {
     const { userId, history, persona } = await req.json();
 
-    // 2. history의 마지막 메시지를 현재 메시지로 간주
     const lastMessage = history[history.length - 1];
+    const indexedHistory = history.map((h: { role: 'model'|'user', parts: object[] }, index: number) => {
+      return { ...h, index: index };
+    });
+    console.log(history);
     if (!lastMessage || lastMessage.role !== 'user') {
       return NextResponse.json({ error: "Invalid history" }, { status: 400 });
     }
     const messageContent = lastMessage.parts[0].text;
-
     const supabase = createClient();
 
     // 4. Gemini 모델 생성 (동일)
@@ -27,8 +29,19 @@ export async function POST(req: NextRequest) {
       },
     });
 
+    let firstIndex;
+
+    const userHistory = indexedHistory.filter((h: { role: "model"|"user", parts: object[], index: number }) => h.role === "user");
+    if (userHistory.length - 5 > 0) {
+      firstIndex = userHistory[userHistory.length - 5].index;
+    } else {
+      firstIndex = userHistory[0].index;
+    }
+
+    console.log(userHistory[firstIndex]);
+
     const chat = model.startChat({
-      history: history.slice(history.length - 5 >= 1 ? history.length - 5 : 1, -1) as Content[],
+      history: history.slice(firstIndex, -1) as Content[],
     });
 
     // 7. 마지막 메시지(현재 메시지) 전송
@@ -55,7 +68,6 @@ export async function POST(req: NextRequest) {
 
     await supabase.from("conversations").insert(inserts);
 
-    // 9. 응답 반환 (동일)
     return NextResponse.json({ reply });
 
   } catch (err: any) {

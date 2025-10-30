@@ -32,23 +32,10 @@ const ProfilePage = () => {
   return user ? (
     <div
       className={
-        "w-full h-full flex flex-col px-5 space-y-5 relative mb-20"
+        "w-full h-full flex flex-col px-5 space-y-10 relative mb-20"
       }
     >
-      <div className={"w-full flex justify-end mt-5"}>
-        <Image
-          src={"/home/logout.svg"}
-          alt={""}
-          className={"cursor-pointer duration-100 active:scale-90"}
-          width={25}
-          height={25}
-          onClick={async () => {
-            await supabase.auth.signOut();
-            router.replace("/onboarding");
-          }}
-        />
-      </div>
-      <div className={"flex space-x-5 items-center"}>
+      <div className={"flex space-x-5 items-center mt-20"}>
         <div className={"w-28 aspect-square rounded-full relative"}>
           {user?.user_metadata.avatar_url &&
           user.user_metadata.full_name ? (
@@ -67,6 +54,18 @@ const ProfilePage = () => {
             {user.user_metadata.full_name?.toString()}
           </p>
         </div>
+      </div>
+      <div className={"flex flex-col space-y-2.5"}>
+        <button className={"w-full p-3 border border-gray-300 rounded-lg flex justify-center items-center space-x-2.5"} onClick={() => {
+          window.open("https://open.kakao.com/o/gCT3DFZh");
+        }}>
+          <Image src={"/profile/chat-with-devs.svg"} alt={""} width={20} height={20} />
+          <p>개발자와 대화하기: 이런 기능을 원해요!</p>
+        </button>
+        <button className={"w-full p-3 border border-red-300 bg-red-50 text-red-700 rounded-lg"} onClick={async () => {
+          await supabase.auth.signOut();
+          router.replace("/onboarding");
+        }}>로그아웃</button>
       </div>
     </div>
   ) : (

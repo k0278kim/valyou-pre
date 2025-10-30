@@ -139,7 +139,8 @@ export default function PersonaChat({
         .from("conversations")
         .select("role, content, type, photo")
         .eq("user_id", user?.id)
-        .eq("persona_name", persona);
+        .eq("persona_name", persona)
+        .order('created_at', { ascending: true });
 
       if (error) {
         console.error("error", error, user?.id);
@@ -202,22 +203,8 @@ export default function PersonaChat({
           }
         }
 
-        // 💡 2. (수정) 포맷된 init 메시지와 함께 설정
         const allMessages = [formattedInitMessage, ...mes];
         setMessages(allMessages);
-
-        // History 설정
-        // setHistory(
-        //   allMessages
-        //     .slice(Math.max(allMessages.length - 5, 0)) // 음수 인덱스 방지
-        //     .filter((m: ChatType) => m.role === "user" || m.role === "persona")
-        //     .map((m: ChatType) => {
-        //       return {
-        //         role: "user",
-        //         parts: [{ text: m.content }],
-        //       } as HistoryPart;
-        //     })
-        // );
 
         const photosMetadata = mes.filter((m) => m.type === "PHOTO");
         console.log(mes, photosMetadata)
@@ -225,31 +212,24 @@ export default function PersonaChat({
           setCurrentPhotoMetadata(photosMetadata[photosMetadata.length - 1].content);
         }
       } else {
-        // 데이터가 null일 경우
         setMessages([formattedInitMessage]);
       }
 
-      setHasFetchedMessages(true); // 💡 3. 실행 완료로 표시
+      setHasFetchedMessages(true);
     };
 
-    // 💡 4. (수정) user, personaCharacter가 있고, *아직 실행되지 않았을 때*만 실행
     if (personaCharacter && user && !hasFetchedMessages) {
       console.log("fetch messages");
       fetchMessages();
     }
 
-    // 💡 5. (수정) 의존성 배열에서 messages.length 제거
   }, [personaCharacter, user, persona, supabase, hasFetchedMessages]);
 
-  // 💡 🚀 useCallback으로 함수를 메모이제이션합니다.
   const sendPhoto = useCallback(
     async (photo: string) => {
+      setLoading(true);
       setCurrentPhotoMetadata(null);
       setMessages((m) => [...m, { type: "PHOTO", role: "user", content: "", photo: photo }]);
-      // setCard({
-      //   question: "어떤 스타일을 입어야 할지 모르겠나요?",
-      //   answer: ["잘 알고 있어요!", "모르겠어요..."]
-      // });
 
       const response = await fetch("/api/chat_photo", {
         method: "POST",
@@ -299,6 +279,7 @@ export default function PersonaChat({
           }
         }
       }
+      setLoading(false);
     },
     [personaCharacter, photoPrompt, supabase] // 💡 supabase 의존성 추가
   );
@@ -306,27 +287,11 @@ export default function PersonaChat({
   const sendMessage = useCallback(async () => {
     if (!input.trim()) return;
 
-    // const newHistory: HistoryPart[] = [
-    //   ...history,
-    //   { role: "user", parts: [{ text: input }] },
-    // ];
-    // setHistory(newHistory);
     setMessages((m) => [...m, { type: "CHAT", role: "user", content: input, photo: null }]);
     const newHistory = { role: "user", parts: [{ text: input }]};
     setLoading(true);
 
     setInput("");
-
-    // const resInit = await fetch("/api/chat_init", {
-    //   method: "POST",
-    //   headers: { "Content-Type": "application/json" },
-    //   body: JSON.stringify({
-    //     history: newHistory,
-    //     prompt: chatInitPrompt
-    //   })
-    // });
-
-    console.log("history", [...history, newHistory]);
 
     const resInit = await fetch("/api/chat_init", {
       method: "POST",
@@ -345,18 +310,6 @@ export default function PersonaChat({
       .trim();
     const finalJsonObject = JSON.parse(cleanedString);
     console.log(finalJsonObject.type)
-    // if (finalJsonObject.type === "ANALYZE") {
-    //   const res = await fetch("/api/chat", {
-    //     method: "POST",
-    //     headers: { "Content-Type": "application/json" },
-    //     body: JSON.stringify({
-    //       prompt: chatAnalyzePrompt,
-    //       persona: personaCharacter,
-    //       userId: user?.id,
-    //       history: newHistory,
-    //       currentPhotoMetadata: currentPhotoMetadata,
-    //     }),
-    //   });
 
       if (finalJsonObject.type === "ANALYZE") {
         const res = await fetch("/api/chat", {
@@ -366,7 +319,7 @@ export default function PersonaChat({
             prompt: chatAnalyzePrompt,
             persona: personaCharacter,
             userId: user?.id,
-            history: history,
+            history: [...history, newHistory],
             currentPhotoMetadata: currentPhotoMetadata,
           }),
         });
@@ -385,16 +338,6 @@ export default function PersonaChat({
 
       if (data.reply) setMessages((m) => [...m, ...resultArray]);
     } else {
-      // const res = await fetch("/api/light_chat", {
-      //   method: "POST",
-      //   headers: { "Content-Type": "application/json" },
-      //   body: JSON.stringify({
-      //     persona: personaCharacter,
-      //     userId: user?.id,
-      //     history: newHistory,
-      //   }),
-      // });
-
         const res = await fetch("/api/light_chat", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -413,33 +356,10 @@ export default function PersonaChat({
 
   return pageState === "DEFAULT" ? (
       <div className="flex flex-col h-dvh w-full mx-auto relative">
-        {
-          card && <div className={"bg-black/30 w-full h-full absolute top-0 left-0 z-40 "}></div>
-        }
-        {
-          card && <motion.div
-            initial={{ top: "-100%" }}
-            animate={{ top: 0 }}
-            className={"absolute z-50 w-full h-full flex items-center justify-center"}>
-            <div
-              className={"bg-white w-[80%] h-fit p-10 rounded-2xl flex-col"}>
-              <div className={"text-blue-700 font-bold text-xl"}>Q.</div>
-              <p className={"break-keep font-semibold"}>{card.question}</p>
-              <div className={"flex flex-col space-y-2.5 mt-10"}>
-                {
-                  card.answer.map((ans, i) => <button onClick={() => {
-                    // todo: 서버로 전송.
-                    setCard(null);
-                  }} key={i} className={"p-3 border border-gray-300 rounded-full hover:bg-gray-100 text-sm"}>{ans}</button> )
-                }
-              </div>
-            </div>
-          </motion.div>
-        }
         <Header personaCharacter={personaCharacter} />
 
         {/* 대화 영역 */}
-        <div className="flex-1 overflow-y-auto p-3 bg-blue-200 flex flex-col space-y-5">
+        <div className="flex-1 overflow-y-auto p-3 bg-gray-100 flex flex-col space-y-5 pt-10">
           {messages.map((m, i) => {
             const isUser = m.role === "user";
             const isPhoto = m.type === "PHOTO";

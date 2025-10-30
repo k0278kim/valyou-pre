@@ -2,6 +2,7 @@ import React, {useState} from "react";
 import Image from "next/image";
 import CircularLoader from "@/components/CircularLoader";
 import { motion } from "framer-motion";
+import {roundTransition} from "@/transitions/round_transition";
 
 type PhotoChatCardType = {
   text: string;
@@ -28,7 +29,7 @@ export const PhotoChatCard = React.memo(function PhotoChatCard({
     .trim() : "";
   const finalJsonObject = metadata ? JSON.parse(cleanedString) : { summary : currentPhotoMetadata };
   return (
-    <motion.div initial={{ opacity: 0, bottom: "-100%" }} animate={{ opacity: 1, bottom: 0 }} className={"w-full flex items-end flex-col"}>
+    <motion.div initial={{ opacity: 0, translateY: 20 }} animate={{ opacity: 1, translateY: 0 }} transition={roundTransition} className={"w-full flex items-end flex-col"}>
       <div
         className={"w-52 h-52 relative rounded-2xl cursor-pointer"}
         onClick={() => setBlur(!blur)}
@@ -38,7 +39,7 @@ export const PhotoChatCard = React.memo(function PhotoChatCard({
             src={text}
             alt="Captured"
             fill
-            className="top-0 left-0 w-full h-full absolute object-cover rounded-2xl"
+            className="top-0 left-0 w-full h-full absolute object-cover rounded-2xl bg-black/10"
           />
         </div>
         <div
@@ -65,7 +66,7 @@ export const PhotoChatCard = React.memo(function PhotoChatCard({
       {((!photoLoading && current) || !current) && (
         <div
           className={
-            "mt-2.5 text-sm bg-[#a7c9ef] p-5 rounded-xl text-[#405166] text-start break-keep flex flex-col space-y-2.5"
+            "mt-2.5 text-sm bg-gray-200 p-5 rounded-xl text-[#405166] text-start break-keep flex flex-col space-y-2.5"
           }
         >
           <div className={"flex space-x-1 items-center"}>
