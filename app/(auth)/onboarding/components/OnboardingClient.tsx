@@ -60,15 +60,12 @@ export default function OnboardingClient() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-start">
+    <div className="h-dvh flex flex-col items-center justify-start">
       <header className="w-full max-w-lg relative mt-2">
         <div className="text-2xl font-semibold mt-24 text-center">
           <p>Valyou.ai</p>
           <p className={"text-sm font-medium"}>AI 대화로 알아가는 패션</p>
         </div>
-        <button className="border border-gray-300 rounded-lg p-2 absolute right-10 top-10 text-sm text-gray-500 hover:text-gray-700" onClick={() => setShowLogin(true)}>
-          건너뛰기
-        </button>
       </header>
 
       {/* 카드: 화면 중앙으로 배치 */}
@@ -86,7 +83,7 @@ export default function OnboardingClient() {
 
                 <div className="w-full flex items-start justify-between max-w-[90%]">
                   <div className="text-center flex flex-col space-y-2.5 mt-10">
-                    <h2 className="text-xl font-bold">{s.title}</h2>
+                    <h2 className="text-2xl font-bold break-keep">{s.title}</h2>
                     <p className="text-sm text-gray-600 mt-1">{s.subtitle}</p>
                   </div>
                 </div>

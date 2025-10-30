@@ -1,6 +1,7 @@
 import React, {useState} from "react";
 import Image from "next/image";
 import CircularLoader from "@/components/CircularLoader";
+import { motion } from "framer-motion";
 
 type PhotoChatCardType = {
   text: string;
@@ -27,7 +28,7 @@ export const PhotoChatCard = React.memo(function PhotoChatCard({
     .trim() : "";
   const finalJsonObject = metadata ? JSON.parse(cleanedString) : { summary : currentPhotoMetadata };
   return (
-    <div className={"w-full flex items-end flex-col"}>
+    <motion.div initial={{ opacity: 0, bottom: "-100%" }} animate={{ opacity: 1, bottom: 0 }} className={"w-full flex items-end flex-col"}>
       <div
         className={"w-52 h-52 relative rounded-2xl cursor-pointer"}
         onClick={() => setBlur(!blur)}
@@ -74,6 +75,6 @@ export const PhotoChatCard = React.memo(function PhotoChatCard({
           <p>{finalJsonObject.summary}</p>
         </div>
       )}
-    </div>
+    </motion.div>
   );
 });

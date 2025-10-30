@@ -1,6 +1,7 @@
 import React from "react";
 import Image from "next/image";
 import {Persona} from "@/model/Persona";
+import { motion } from "framer-motion";
 
 export const TextChatCard = React.memo(function TextChatCard({
                                                         isUser,
@@ -13,7 +14,7 @@ export const TextChatCard = React.memo(function TextChatCard({
 }) {
   const deepChat = text.startsWith("deep_chat");
   return (
-    <div className="flex space-x-2.5 max-w-[80%]">
+    <motion.div initial={{ opacity: 0, bottom: "-100%" }} animate={{ opacity: 1, bottom: 0 }} className="flex space-x-2.5 max-w-[80%]">
       {/* 페르소나 프로필 이미지 */}
       {!isUser &&
         (personaCharacter?.avatar_image ? (
@@ -46,6 +47,6 @@ export const TextChatCard = React.memo(function TextChatCard({
           <p className="whitespace-pre-line">{deepChat ? text.split("__")[2] : text}</p>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 });
