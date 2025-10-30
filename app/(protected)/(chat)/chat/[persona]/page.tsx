@@ -1,6 +1,6 @@
 "use client";
 
-import React, { use, useEffect, useRef, useState, useCallback } from "react";
+import React, {use, useEffect, useRef, useState, useCallback, ChangeEvent} from "react";
 import Image from "next/image";
 // 💡 createClient 대신 useSupabaseClient 훅을 사용합니다.
 import {
@@ -10,7 +10,6 @@ import {
 import Camera from "@/components/Camera";
 import { useRouter } from "next/navigation";
 import { Persona } from "@/model/Persona";
-import { motion } from "framer-motion";
 import {PhotoChatCard} from "@/app/(protected)/(chat)/chat/[persona]/components/PhotoChatCard";
 import {TextChatCard} from "@/app/(protected)/(chat)/chat/[persona]/components/TextChatCard";
 import {LoadingIndicatorChat} from "@/app/(protected)/(chat)/chat/[persona]/components/LoadingIndicatorChat";
@@ -25,6 +24,7 @@ import {
 import {fetchPersonaAvatar} from "@/app/(protected)/(chat)/chat/[persona]/utils/fetchPersonaAvatar";
 import {ChatType} from "@/app/(protected)/(chat)/chat/[persona]/type/chat";
 import Header from "@/app/(protected)/(chat)/chat/[persona]/components/Header";
+import { fileToBase64 } from "@/utils/image/fileToBase64";
 
 type HistoryPart = {
   role: "user" | "model";
@@ -62,24 +62,31 @@ export default function PersonaChat({
   const [currentPhotoMetadata, setCurrentPhotoMetadata] = useState<string | null>(null);
   const [hasFetchedMessages, setHasFetchedMessages] = useState(false);
   const [photoLoadingStatus, setPhotoLoadingStatus] = useState("");
+  const [photoSource, setPhotoSource] = useState<"CAMERA"|"GALLERY"|null>(null);
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const router = useRouter();
   const supabase = useSupabaseClient();
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    if (!file) return;
-
-    const response = await fetch(
-      `/api/upload?filename=${file.name}`,
-      {
-        method: 'POST',
-        body: file,
+  const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files.length > 0) {
+      const file = event.target.files[0];
+      if (file) {
+        try {
+          const base64String = await fileToBase64(file);
+          setPhoto(base64String as string);
+          setPhotoSource("GALLERY");
+          setPageState("CAMERA");
+        } catch (error) {
+          console.error("파일 변환 오류:", error);
+        }
       }
-    );
+    }
+  };
 
-    const newBlob = (await response.json()) as PutBlobResult;
-    setBlob(newBlob);
+  const openGallery = () => {
+    fileInputRef.current?.click();
   };
 
   useEffect(() => { // '분석 채팅 답변 생성' 프롬프트 불러오기
@@ -407,8 +414,10 @@ export default function PersonaChat({
             setInput={setInput}
             sendMessage={sendMessage}
             setPageState={setPageState}
-            handleSubmit={handleSubmit}
+            handleFileChange={handleFileChange}
             setFile={setFile}
+            openGallery={openGallery}
+            fileInputRef={fileInputRef}
           />
         </div>
       </div>
@@ -468,9 +477,15 @@ export default function PersonaChat({
               className={
                 "flex-1 w-full h-14 flex items-center justify-center bg-gray-900 text-white rounded-full"
               }
-              onClick={() => setPhoto(null)}
+              onClick={() => {
+                if (photoSource === "GALLERY") {
+                  setPageState("DEFAULT");
+                  setPhotoSource(null);
+                }
+                setPhoto(null);
+              }}
             >
-              다시 촬영
+              { photoSource === "GALLERY" ? "취소" : "다시 촬영" }
             </button>
             <button
               className={
