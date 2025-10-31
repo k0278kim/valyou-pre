@@ -80,7 +80,7 @@ export const PhotoChatCard = React.memo(function PhotoChatCard({
           <p>{finalJsonObject.summary}</p>
           { current && <div className={"grid grid-cols-2 gap-1"}>
             {
-              ["얼굴을 분석해줘", "어떤 옷을 입을까?", "이 옷은 어때?", "사진을 분석해줘"].map((item, index) => <NextChatButton text={item} sendMessage={sendMessage} key={index} />)
+              ["얼굴을 분석해줘", "헤어 스타일을 추천해줘", "이 옷은 어때?", "사진을 분석해줘"].map((item, index) => <NextChatButton text={item} sendMessage={sendMessage} key={index} />)
             }
           </div> }
         </div>

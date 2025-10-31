@@ -46,6 +46,7 @@ export const BottomChat = ({
         />
         <button
           onClick={openGallery}
+          disabled={loading}
           className={`cursor-pointer shrink-0 h-12 w-12 border border-gray-300 rounded-full flex items-center justify-center ${loading && "opacity-50"}`}
         >
           <Image src={"/chat/photo.svg"} alt={"사진 첨부"} width={15} height={15} />
