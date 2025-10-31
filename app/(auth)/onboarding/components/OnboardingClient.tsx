@@ -60,7 +60,7 @@ export default function OnboardingClient() {
   }
 
   return (
-    <div className="h-dvh flex flex-col items-center justify-start">
+    <div className="h-svh flex flex-col items-center justify-start">
       <header className="w-full max-w-lg relative mt-2">
         <div className="text-2xl font-semibold mt-24 text-center">
           <p>Valyou.ai</p>
@@ -109,21 +109,6 @@ export default function OnboardingClient() {
           </motion.button>
         </div>
       </div>
-
-      {/*{showLogin && (*/}
-      {/*  <div className="fixed inset-0 bg-black/40 flex items-center justify-center p-4 z-50">*/}
-      {/*    <div className="bg-white rounded-xl p-6 w-full max-w-sm text-center">*/}
-      {/*      <h3 className="text-lg font-bold mb-2">만나서 반가워요!</h3>*/}
-      {/*      <p className="text-sm text-gray-600 mb-4">간편하게 로그인하고 시작해보세요.</p>*/}
-      {/*      <button className="w-full py-2 border rounded-md mb-2 font-semibold">G | 구글로 로그인</button>*/}
-      {/*      <button className="w-full py-2 border rounded-md mb-2 font-semibold">이메일로 로그인</button>*/}
-      {/*      <button className="w-full py-2 text-sm text-gray-600" onClick={() => setShowLogin(false)}>*/}
-      {/*        돌아가기*/}
-      {/*      </button>*/}
-      {/*      <p className="text-xs text-gray-400 mt-3">로그인 시 개인정보처리방침 및 이용약관에 동의하는 것으로 간주합니다.</p>*/}
-      {/*    </div>*/}
-      {/*  </div>*/}
-      {/*)}*/}
     </div>
   )
 }

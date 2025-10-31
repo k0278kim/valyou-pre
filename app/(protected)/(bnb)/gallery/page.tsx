@@ -8,6 +8,8 @@ import {useSupabaseClient, useUser} from "@/context/SupabaseProvider";
 import {useRouter} from "next/navigation";
 import Image from "next/image";
 import CircularLoader from "@/components/CircularLoader";
+import {AnimatePresence, motion} from "framer-motion";
+import {roundTransition} from "@/transitions/round_transition";
 
 const GalleryPage = () => {
 
@@ -67,31 +69,40 @@ const GalleryPage = () => {
 
   }, [user, supabase]);
 
-  return <div className={"w-full h-full"}>
-    <div className={"w-full p-5 rounded-2xl flex flex-col space-y-10"}>
+  return <div className={`w-full h-full relative ${(blur && photos.length != 0) && "overflow-y-hidden" }`}>
+    <div className={"w-full rounded-2xl flex flex-col space-y-10"}>
       <div className={"flex flex-col h-full"}>
-        <p className={"font-bold text-2xl my-7"}>사진</p>
-        <div className={`w-full h-fit relative flex justify-center`}>
+        <div className={`w-full h-full relative flex justify-center items-center`}>
           {
             loading ? <div className={"w-12 h-12"}><CircularLoader /></div> : photos.length === 0 && <PhotoEmptyCard />
           }
         </div>
-        { !loading && <div className={`grid grid-cols-3 gap-1 flex-1 relative`}>
+        { !loading && <div className={`grid grid-cols-3 gap-1 flex-1 relative p-1`}>
           {photos.map((photo: PhotoTypeWithSignedUrl) => (
             <div className={"w-full h-full"} key={photo.id}><PhotoCard photo={photo} /></div>
           ))}
-          { (blur && photos.length != 0) && <div className={`w-full h-full absolute top-0 left-0 z-30 backdrop-brightness-150 bg-white/20 flex flex-col items-center justify-center backdrop-blur-xl space-y-2.5`}>
-            <div className={"w-5 h-5 relative"}>
-              <Image src={"/bnb/lock.svg"} alt={""} fill className={"object-cover"} />
-            </div>
-            <p className={"font-semibold text-black/70"}>사진을 보려면 해제하세요</p>
-            <button className={"p-2 font-medium rounded-lg border border-black/30 text-black/70 text-sm"} onClick={() => setBlur(!blur)}>사진 보기</button>
-          </div>
-          }
+          <AnimatePresence>{ (blur && photos.length != 0) && <motion.div
+            exit={{ opacity: 0, backdropFilter: "blur(0px)" }}
+            className={`w-full h-full absolute top-0 left-0 z-30 bg-white/20 flex flex-col items-center justify-center backdrop-blur-sm space-y-2.5`}></motion.div> }</AnimatePresence>
         </div>
         }
       </div>
     </div>
+    <AnimatePresence>
+    { (blur && photos.length != 0) && <motion.div
+      initial={{ opacity: 0, translateY: "100%" }}
+      animate={{ opacity: 1, translateY: 0 }}
+      exit={{ opacity: 0, translateY: "100%" }}
+      transition={roundTransition}
+      className={"absolute bottom-0 flex flex-col space-y-2.5 items-center justify-center z-50 h-[50%] w-full bg-gradient-to-b from-white/0 to-white to-50%"}>
+      <div className={"w-5 h-5 relative"}>
+        <Image src={"/bnb/lock.svg"} alt={""} fill className={"object-cover"} />
+      </div>
+      <p className={"font-semibold text-black/70"}>사진을 보려면 해제하세요</p>
+      <button className={"p-2 font-medium rounded-lg border border-black/30 text-black/70 text-sm"} onClick={() => setBlur(!blur)}>사진 보기</button>
+    </motion.div>
+    }
+    </AnimatePresence>
   </div>
 }
 

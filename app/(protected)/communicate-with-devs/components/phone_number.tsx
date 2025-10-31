@@ -29,7 +29,7 @@ const PhoneNumber = ({ setPage }: PhoneNumberProps) => {
       animate={{ opacity: 1, translateY: 0 }}
       transition={roundTransition}
       className={"font-bold text-2xl break-keep py-20"}>다음 실험을 알려드리기 위해<br/>전화번호가 필요해요.</motion.div>
-    <div className={"flex space-x-2.5 h-20 text-2xl font-medium relative"}>
+    <div className={"flex space-x-2.5 h-14 text-2xl font-medium relative"}>
       <motion.div
         className={`rounded-2xl flex-[3] flex items-center justify-center duration-100 ${
           selectedBlock === 0 ? "bg-blue-100 scale-105 border-2 border-blue-400 text-blue-700" : "bg-gray-100 border-none"
