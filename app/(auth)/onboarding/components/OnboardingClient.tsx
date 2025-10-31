@@ -60,7 +60,7 @@ export default function OnboardingClient() {
   }
 
   return (
-    <div className="h-svh flex flex-col items-center justify-start">
+    <div className="h-dvh flex flex-col items-center justify-start">
       <header className="w-full max-w-lg relative mt-2">
         <div className="text-2xl font-semibold mt-24 text-center">
           <p>Valyou.ai</p>
