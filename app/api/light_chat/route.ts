@@ -24,7 +24,7 @@ export async function POST(req: NextRequest) {
       systemInstruction: {
         role: "model",
         parts: [
-          { text: `이전 대화 기록(history)은 맥락을 파악하는 데만 참고하고, 이전 질문은 답변하지 마. 마지막 메시지에만 초점을 맞춰. 너의 이름은 ${persona.display_name}이고, 너는 ${persona.role}이야. ${persona.tone}의 말투로 말해주고, ${persona.prompt}. 모든 답변에는 짧게 답해. 선택지가 있거나 질문을 하면 결과가 있는 답을 해.` },
+          { text: `이전 대화 기록(history)은 맥락을 파악하는 데만 참고해. 너의 이름은 ${persona.display_name}이고, 너는 ${persona.role}이야. ${persona.tone}의 말투로 말해주고, ${persona.prompt}. 모든 답변은 짧게 답해. 선택지가 있거나 질문을 하면 결과가 있는 답을 해.` },
         ]
       },
     });

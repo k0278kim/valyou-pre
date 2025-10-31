@@ -57,7 +57,7 @@ const ProfilePage = () => {
       </div>
       <div className={"flex flex-col space-y-2.5"}>
         <button className={"w-full p-3 border border-gray-300 rounded-lg flex justify-center items-center space-x-2.5"} onClick={() => {
-          window.open("https://open.kakao.com/o/gCT3DFZh");
+          window.open("https://open.kakao.com/o/sPpbZKZh");
         }}>
           <Image src={"/profile/chat-with-devs.svg"} alt={""} width={20} height={20} />
           <p>개발자와 대화하기: 이런 기능을 원해요!</p>
