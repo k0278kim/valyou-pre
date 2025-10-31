@@ -18,11 +18,11 @@ export default async function SignUpLayout({ children }: { children: React.React
   // 2. (추가) 프로필 정보 확인
   const { data: profile, error: profileError } = await supabase
     .from('profiles')
-    .select('id') // 존재 여부만 확인하면 되므로 'id'만 가져옵니다.
+    .select('id, status') // 존재 여부만 확인하면 되므로 'id'만 가져옵니다.
     .eq('id', user.id)
-    .single<Pick<Profile, 'id'>>(); // 타입 지정
+    .single<{ id: Pick<Profile, 'id'>, status: string }>(); // 타입 지정
 
-  if (profile) {
+  if (profile && profile.status === "VISIBLE") {
     redirect("/");
   }
 

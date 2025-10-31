@@ -7,4 +7,5 @@ export type Profile = {
   avatar_url: string;
   plan: string;
   gender: string;
+  status: string;
 }

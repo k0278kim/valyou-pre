@@ -18,9 +18,9 @@ export default async function ProtectedLayout({ children }: { children: React.Re
   // 2. (추가) 프로필 정보 확인
   const { data: profile, error: profileError } = await supabase
     .from('profiles')
-    .select('id') // 존재 여부만 확인하면 되므로 'id'만 가져옵니다.
+    .select('id, status') // 존재 여부만 확인하면 되므로 'id'만 가져옵니다.
     .eq('id', user.id)
-    .single<Pick<Profile, 'id'>>(); // 타입 지정
+    .single<{ id: Pick<Profile, 'id'>, status: string}>(); // 타입 지정
 
   // 프로필이 없고, 에러가 'PGRST116'(데이터 없음)가 아닌 경우
   if (!profile && profileError && profileError.code !== 'PGRST116') {
@@ -28,9 +28,10 @@ export default async function ProtectedLayout({ children }: { children: React.Re
     // 에러 페이지로 리디렉션하거나 로그인 페이지로 보낼 수 있습니다.
     redirect("/onboarding?error=profile_fetch_failed");
   }
+  console.log(profile);
 
   // 3. (중요) 프로필이 없는 사용자 리디렉션
-  if (!profile) {
+  if (!profile || profile.status === "LEAVE") {
     redirect("/complete-signup");
   }
 

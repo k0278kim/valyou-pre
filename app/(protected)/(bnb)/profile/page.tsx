@@ -56,16 +56,27 @@ const ProfilePage = () => {
         </div>
       </div>
       <div className={"flex flex-col space-y-2.5"}>
-        <button className={"w-full p-3 border border-gray-300 rounded-lg flex justify-center items-center space-x-2.5"} onClick={() => {
+        <button className={"w-full p-3 border border-red-300 bg-red-50 text-red-700 rounded-lg"} onClick={async () => {
+          await supabase.auth.signOut();
+          router.replace("/onboarding");
+        }}>로그아웃</button>
+        <button className={"w-full p-3 border border-gray-300 rounded-lg flex flex-col justify-center items-center space-x-2.5"} onClick={() => {
           window.open("https://open.kakao.com/o/sPpbZKZh");
         }}>
           <Image src={"/profile/chat-with-devs.svg"} alt={""} width={20} height={20} />
           <p>개발자와 대화하기: 이런 기능을 원해요!</p>
         </button>
-        <button className={"w-full p-3 border border-red-300 bg-red-50 text-red-700 rounded-lg"} onClick={async () => {
-          await supabase.auth.signOut();
-          router.replace("/onboarding");
-        }}>로그아웃</button>
+        <p className={"mt-10 mb-5 font-bold"}>계정</p>
+        <button className={"w-full p-3 border border-gray-300 text-black font-medium rounded-lg"} onClick={async () => {
+          const confirm = window.confirm("정말 탈퇴할까요?");
+          if (confirm) {
+            const { data, error } = await supabase.from("profiles")
+              .update({ status: "LEAVE" })
+              .eq("id", user?.id)
+            if (error) console.error(error);
+            router.replace("/onboarding");
+          }
+        }}>탈퇴하기</button>
       </div>
     </div>
   ) : (

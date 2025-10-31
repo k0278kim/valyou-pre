@@ -56,7 +56,8 @@ export default function CompleteSignupPage() {
         nickname,
         birth_year: parseInt(birthYear, 10),
         avatar_url: avatarUrl,
-        gender: gender
+        gender: gender,
+        status: "VISIBLE"
       });
     } catch (err: any) {
       console.error("❌ Signup error:", err);

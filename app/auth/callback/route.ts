@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
 
       const { data: userProfile, error: profileError } = await supabase
         .from("profiles")
-        .select("id")
+        .select("id, status")
         .eq("id", (await supabase.auth.getUser()).data.user?.id)
         .maybeSingle();
 
@@ -25,7 +25,7 @@ export async function GET(request: NextRequest) {
 
       console.log(origin, next);
 
-      if (!userProfile) {
+      if (!userProfile || userProfile.status === "LEAVE") {
         return NextResponse.redirect(`${origin}/complete-signup`);
       }
       return NextResponse.redirect(`${origin}${next}`)
