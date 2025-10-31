@@ -63,7 +63,7 @@ const ProfilePage = () => {
         <button className={"w-full p-3 border border-gray-300 rounded-lg flex flex-col justify-center items-center space-y-2.5"} onClick={() => {
           window.open("https://open.kakao.com/o/sPpbZKZh");
         }}>
-          <div className={"w-full h-64 relative"}>
+          <div className={"w-full h-44 relative"}>
             <Image src={"/profile/openchat-banner.png"} alt={""} fill className={"object-fill rounded-2xl"} />
           </div>
           <p className={"font-bold"}>개발자와 대화하기: 오픈채팅방으로 연결됩니다.</p>
