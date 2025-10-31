@@ -1,4 +1,3 @@
-import {PulseLoader} from "react-spinners";
 import React from "react";
 import {useRouter} from "next/navigation";
 

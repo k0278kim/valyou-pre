@@ -3,31 +3,35 @@ import Image from "next/image";
 import CircularLoader from "@/components/CircularLoader";
 import { motion } from "framer-motion";
 import {roundTransition} from "@/transitions/round_transition";
+import {ChatType} from "@/app/(protected)/(chat)/chat/[persona]/type/chat";
 
 type PhotoChatCardType = {
   text: string;
   metadata: string | null;
-  current: boolean;
   photoLoading: boolean;
-  currentPhotoMetadata: string|null;
   photoLoadingStatus: string;
+  messages: ChatType[];
+  index: number;
+  sendMessage: (message: string) => Promise<void>;
 };
 
 export const PhotoChatCard = React.memo(function PhotoChatCard({
-                                                          text,
-                                                          metadata,
-                                                          current,
-                                                          currentPhotoMetadata,
-                                                          photoLoading,
-  photoLoadingStatus
-                                                        }: PhotoChatCardType) {
+                                                                 text,
+                                                                 metadata,
+                                                                 photoLoading,
+                                                                 messages,
+                                                                 photoLoadingStatus,
+                                                                 index,
+  sendMessage
+                                                               }: PhotoChatCardType) {
   const [blur, setBlur] = useState(true);
+  const current = index === messages.length - 1;
   const cleanedString = metadata ? metadata
     .replaceAll("```json", "")
     .replaceAll("`", "")
     .replaceAll("[이미지 분석 결과]:", "")
-    .trim() : "";
-  const finalJsonObject = metadata ? JSON.parse(cleanedString) : { summary : currentPhotoMetadata };
+    .trim() : `{"summary":""}`;
+  const finalJsonObject = JSON.parse(cleanedString);
   return (
     <motion.div initial={{ opacity: 0, translateY: 20 }} animate={{ opacity: 1, translateY: 0 }} transition={roundTransition} className={"w-full flex items-end flex-col"}>
       <div
@@ -48,12 +52,12 @@ export const PhotoChatCard = React.memo(function PhotoChatCard({
             (blur && "backdrop-blur-xl")
           }
         >
-          {photoLoading && current ? (
+          {(photoLoading && current) ? (
             <div className={"flex flex-col items-center justify-center w-full h-full bg-black/30 rounded-2xl"}>
               <div className={"w-7 h-7 z-20"}>
                 <CircularLoader />
               </div>
-            { (photoLoading && current) && <p className={"break-keep p-2.5 text-sm mt-2.5 text-white/60"}>{photoLoadingStatus}</p> }
+              { (photoLoading && current) && <p className={"break-keep p-2.5 text-sm mt-2.5 text-white/60"}>{photoLoadingStatus}</p> }
             </div>
           ) : (
             blur && <div className={"flex flex-col items-center space-y-2.5"}>
@@ -74,8 +78,27 @@ export const PhotoChatCard = React.memo(function PhotoChatCard({
             <p className={"font-semibold"}>사진 분석 결과</p>
           </div>
           <p>{finalJsonObject.summary}</p>
+          { current && <div className={"grid grid-cols-2 gap-1"}>
+            {
+              ["얼굴을 분석해줘", "어떤 옷을 입을까?", "이 옷은 어때?", "사진을 분석해줘"].map((item, index) => <NextChatButton text={item} sendMessage={sendMessage} key={index} />)
+            }
+          </div> }
         </div>
       )}
     </motion.div>
   );
 });
+
+type NextChatButtonProps = {
+  text: string;
+  sendMessage: (message: string) => Promise<void>;
+}
+
+const NextChatButton = ({ text, sendMessage }: NextChatButtonProps) => {
+  return <button onClick={async () => {
+    await sendMessage(text);
+  }}
+                 className={"rounded-lg p-2.5 bg-white border border-gray-300 text-sm font-medium"}>
+    {text}
+  </button>
+}

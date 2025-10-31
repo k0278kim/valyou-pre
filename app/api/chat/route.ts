@@ -16,6 +16,7 @@ export async function POST(req: NextRequest) {
     const messageContent = lastMessage.parts[0].text;
 
     const supabase = createClient();
+    console.log(prompt);
 
     // 4. Gemini 모델 생성 (동일)
     const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY!);
@@ -24,7 +25,7 @@ export async function POST(req: NextRequest) {
       systemInstruction: {
         role: "model",
         parts: [
-          { text: `너의 이름은 ${persona.display_name}이고, 너는 ${persona.role}이야. ${persona.tone}의 말투로 말해주고, ${persona.prompt}.[이미지 분석 결과] 라고 써 있으면 사용자가 사진을 올리고 분석한 결과니까 기반해서 철저하게 분석 답변해.${currentPhotoMetadata && `최신 사진 분석 결과:${currentPhotoMetadata}`}` },
+          { text: `너의 이름은 ${persona.display_name}이고, 너는 ${persona.role}이야. ${persona.tone}의 말투로 말해주고, ${persona.prompt}. 다음은 사용자가 사진을 올리고 분석한 결과니까 기반해서 철저하게 분석 답변해.${currentPhotoMetadata && `최신 사진 분석 결과:${currentPhotoMetadata}`}` },
           { text: prompt }
         ]
       },

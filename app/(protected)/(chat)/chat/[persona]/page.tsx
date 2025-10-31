@@ -14,7 +14,6 @@ import {PhotoChatCard} from "@/app/(protected)/(chat)/chat/[persona]/components/
 import {TextChatCard} from "@/app/(protected)/(chat)/chat/[persona]/components/TextChatCard";
 import {LoadingIndicatorChat} from "@/app/(protected)/(chat)/chat/[persona]/components/LoadingIndicatorChat";
 import {BottomChat} from "@/app/(protected)/(chat)/chat/[persona]/components/BottomChat";
-import {PutBlobResult} from "@vercel/blob";
 import {FetchResponseType} from "@/app/(protected)/(chat)/chat/[persona]/type/fetchResponseType";
 import {
   fetchChatAnalyzePrompt,
@@ -44,8 +43,6 @@ export default function PersonaChat({
   const { persona } = use(params);
   const { user } = useUser();
 
-  const [blob, setBlob] = useState<PutBlobResult | null>(null);
-  const [file, setFile] = useState<File | null>(null);
   const [photoPrompt, setPhotoPrompt] = useState("");
   const [chatInitPrompt, setChatInitPrompt] = useState("");
   const [chatAnalyzePrompt, setChatAnalyzePrompt] = useState("");
@@ -194,15 +191,20 @@ export default function PersonaChat({
               mes.push({ type: "CHAT", role: "user", content: data[i].content, photo: null });
             } else {
               if (data[i].type === "ANALYZE") {
-                const cleanedString = data[i].content
-                  .replaceAll("```json", "")
-                  .replaceAll("`", "")
-                  .trim();
-                const finalJsonObject = JSON.parse(cleanedString);
-                const resultArray: ChatType[] = Object.entries(finalJsonObject).filter(([key, value]) => value != "").map(([key, value]) => {
-                  return { type: "CHAT", role: "persona", content: `deep_chat__${key}__${value}`, photo: null }
-                });
-                mes = [...mes, ...resultArray];
+                try {
+                  const cleanedString = data[i].content
+                    .replaceAll("```json", "")
+                    .replaceAll("`", "")
+                    .trim();
+                  const finalJsonObject = JSON.parse(cleanedString);
+                  const resultArray: ChatType[] = Object.entries(finalJsonObject).filter(([key, value]) => value != "").map(([key, value]) => {
+                    return { type: "CHAT", role: "persona", content: `deep_chat__${key}__${value}`, photo: null }
+                  });
+                  mes = [...mes, ...resultArray];
+                } catch (e) {
+                  console.log(e);
+                  mes.push({ type: "CHAT", role: "persona" ,content: data[i].content, photo: null });
+                }
               } else {
                 mes.push({ type: "CHAT", role: "persona", content: data[i].content, photo: null });
               }
@@ -279,6 +281,7 @@ export default function PersonaChat({
                 .replaceAll("`", "")
                 .trim();
               const finalJsonObject = JSON.parse(cleanedString);
+              setMessages((m) => [...m.slice(0, -1), { type: "PHOTO", role: "user", content: jsonObject, photo: photo }]);
               setCurrentPhotoMetadata(finalJsonObject.summary);
             }
           } catch (e) {
@@ -291,7 +294,7 @@ export default function PersonaChat({
     [personaCharacter, photoPrompt, supabase] // 💡 supabase 의존성 추가
   );
 
-  const sendMessage = useCallback(async () => {
+  const sendMessage = useCallback(async (input: string) => {
     if (!input.trim()) return;
 
     setMessages((m) => [...m, { type: "CHAT", role: "user", content: input, photo: null }]);
@@ -380,11 +383,13 @@ export default function PersonaChat({
               >
                 {isPhoto ? (
                   <PhotoChatCard
+                    key={i}
                     text={m.photo ? m.photo : ""} // URL
+                    sendMessage={sendMessage}
                     metadata={m.content}
-                    current={i === messages.length - 1}
+                    messages={messages}
+                    index={i}
                     photoLoading={photoLoading}
-                    currentPhotoMetadata={currentPhotoMetadata}
                     photoLoadingStatus={photoLoadingStatus}
                   />
                 ) : (
@@ -415,7 +420,6 @@ export default function PersonaChat({
             sendMessage={sendMessage}
             setPageState={setPageState}
             handleFileChange={handleFileChange}
-            setFile={setFile}
             openGallery={openGallery}
             fileInputRef={fileInputRef}
           />

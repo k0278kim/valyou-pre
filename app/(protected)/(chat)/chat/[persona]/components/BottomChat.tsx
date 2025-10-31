@@ -6,8 +6,7 @@ type BottomChatProps = {
   input: string;
   setPageState: (state: "CAMERA" | "DEFAULT") => void;
   setInput: (state: string) => void;
-  sendMessage: () => void;
-  setFile: Dispatch<SetStateAction<File | null>>;
+  sendMessage: (message: string) => void;
   openGallery: () => void;
   fileInputRef: Ref<HTMLInputElement> | undefined;
   handleFileChange: (event: ChangeEvent<HTMLInputElement>) => Promise<void>
@@ -19,7 +18,6 @@ export const BottomChat = ({
                              setPageState,
                              setInput,
                              sendMessage,
-                             setFile,
   fileInputRef,
   openGallery,
   handleFileChange
@@ -62,7 +60,7 @@ export const BottomChat = ({
           />
         </div>
         <button
-          onClick={sendMessage}
+          onClick={() => sendMessage(input)}
           className={`shrink-0 h-12 w-12 rounded-full flex items-center justify-center ${
             loading || input === "" ? "bg-gray-300 opacity-50" : "bg-gray-800"
           }`}

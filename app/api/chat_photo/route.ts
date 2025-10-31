@@ -150,7 +150,7 @@ export async function POST(req: NextRequest) {
           photo: uploadedPath,
           type: "PHOTO",
           // Store the analysis result associated with this user action
-          content: "[이미지 분석 결과]:" + reply.replace("```json", "").replace("```", "").trim(),
+          content: reply.replace("```json", "").replace("```", "").trim(),
         };
 
         const { data: chatUploadData, error: chatUploadError } = await supabase
