@@ -46,9 +46,9 @@ export const PhotoChatCard = React.memo(function PhotoChatCard({
             className="top-0 left-0 w-full h-full absolute object-cover rounded-2xl bg-black/10"
           />
         </div>
-        <div
+        <motion.div
           className={
-            "absolute w-full h-full top-0 left-0 z-10 rounded-2xl flex items-center justify-center " +
+            "absolute w-full h-full top-0 left-0 z-10 rounded-2xl flex items-center justify-center duration-200 " +
             (blur && "backdrop-blur-xl")
           }
         >
@@ -65,7 +65,7 @@ export const PhotoChatCard = React.memo(function PhotoChatCard({
               <p className={"text-sm text-white/50"}>눌러서 블러 해제</p>
             </div>
           )}
-        </div>
+        </motion.div>
       </div>
       {((!photoLoading && current) || !current) && (
         <div

@@ -56,20 +56,22 @@ const ProfilePage = () => {
         </div>
       </div>
       <div className={"flex flex-col space-y-2.5"}>
-        <button className={"w-full p-3 border border-red-300 bg-red-50 text-red-700 rounded-lg"} onClick={async () => {
-          await supabase.auth.signOut();
-          router.replace("/onboarding");
-        }}>로그아웃</button>
-        <button className={"w-full p-3 border border-gray-300 rounded-lg flex flex-col justify-center items-center space-y-2.5"} onClick={() => {
+        <p className={"mt-10 mb-5 font-bold"}>성장을 도와주세요!</p>
+        <button className={"w-full border border-gray-200 rounded-lg flex flex-col justify-center items-center"} onClick={() => {
           window.open("https://open.kakao.com/o/sPpbZKZh");
         }}>
-          <div className={"w-full h-44 relative"}>
-            <Image src={"/profile/openchat-banner.png"} alt={""} fill className={"object-fill rounded-2xl"} />
+          <div className={"w-full h-44 relative border-b border-gray-200"}>
+            <Image src={"/profile/openchat-banner.png"} alt={""} fill className={"object-contain rounded-2xl"} />
           </div>
-          <p className={"font-bold"}>개발자와 대화하기: 오픈채팅방으로 연결됩니다.</p>
+          <p className={"font-bold pt-3"}>개발자와 대화하기</p>
+          <p className={"text-sm pb-3"}>개발자의 카카오톡 오픈채팅방으로 연결됩니다.</p>
         </button>
         <p className={"mt-10 mb-5 font-bold"}>계정</p>
-        <button className={"w-full p-3 border border-gray-300 text-black font-medium rounded-lg"} onClick={async () => {
+        <button className={"w-full p-3 border border-gray-200 bg-white rounded-lg font-medium"} onClick={async () => {
+          await supabase.auth.signOut();
+          router.replace("/onboarding");
+        }}>계정 로그아웃</button>
+        <button className={"w-full p-3 border border-red-200 bg-red-50 text-red-800 font-medium rounded-lg"} onClick={async () => {
           const confirm = window.confirm("정말 탈퇴할까요?");
           if (confirm) {
             const { data, error } = await supabase.from("profiles")

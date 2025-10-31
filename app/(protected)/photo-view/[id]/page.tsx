@@ -91,7 +91,7 @@ export default function PersonaChat({ params }: {
       { photoUrl && <Image src={photoUrl} alt={""} fill className={"w-full object-contain"} /> }
     </div>
     <div className={"absolute bottom-10 w-full flex flex-col items-center space-y-2.5"}>
-      <p className={"font-bold text-white/30 text-sm"}>사진 정보 보기</p>
+      <p className={"font-bold text-white/30 text-sm"}>아래로 스크롤해서 사진 정보 보기</p>
       <Image src={"/photo-view/chevron-down.svg"} alt={""} width={50} height={50} />
     </div>
     <div className={"w-full text-white flex flex-col space-y-5 p-10"}>
