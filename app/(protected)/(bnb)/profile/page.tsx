@@ -60,11 +60,13 @@ const ProfilePage = () => {
           await supabase.auth.signOut();
           router.replace("/onboarding");
         }}>로그아웃</button>
-        <button className={"w-full p-3 border border-gray-300 rounded-lg flex flex-col justify-center items-center space-x-2.5"} onClick={() => {
+        <button className={"w-full p-3 border border-gray-300 rounded-lg flex flex-col justify-center items-center space-y-2.5"} onClick={() => {
           window.open("https://open.kakao.com/o/sPpbZKZh");
         }}>
-          <Image src={"/profile/chat-with-devs.svg"} alt={""} width={20} height={20} />
-          <p>개발자와 대화하기: 이런 기능을 원해요!</p>
+          <div className={"w-full h-64 relative"}>
+            <Image src={"/profile/openchat-banner.png"} alt={""} fill className={"object-fill rounded-2xl"} />
+          </div>
+          <p className={"font-bold"}>개발자와 대화하기: 오픈채팅방으로 연결됩니다.</p>
         </button>
         <p className={"mt-10 mb-5 font-bold"}>계정</p>
         <button className={"w-full p-3 border border-gray-300 text-black font-medium rounded-lg"} onClick={async () => {

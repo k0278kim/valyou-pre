@@ -18,6 +18,7 @@ const ChatListPage = () => {
       const { data, error } = await supabase
         .from("personas")
         .select("*")
+        .eq("access", "TRUE")
       console.log(data);
       if (error) console.error("error", error);
       else setPersonas(data);
