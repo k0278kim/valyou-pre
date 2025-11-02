@@ -69,8 +69,8 @@ const GalleryPage = () => {
 
   }, [user, supabase]);
 
-  return <div className={`w-full h-full relative ${(blur && photos.length != 0) && "overflow-y-hidden" }`}>
-    <div className={"w-full rounded-2xl flex flex-col space-y-10"}>
+  return <div className={`w-full h-full relative scrollbar-hide ${(blur && photos.length != 0) ? "overflow-y-hidden" : "overflow-y-scroll"}`}>
+    <div className={"w-full rounded-2xl flex flex-col space-y-10 h-full"}>
       <div className={"flex flex-col h-full"}>
         <div className={`w-full h-full relative flex justify-center items-center`}>
           {

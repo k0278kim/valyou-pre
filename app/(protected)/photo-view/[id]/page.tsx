@@ -83,24 +83,20 @@ export default function PersonaChat({ params }: {
     }
   }, [photoUrl]);
 
-  return <div className={"w-full h-full bg-gray-950 relative overflow-y-scroll"}>
+  return <div className={"w-full h-full bg-gray-950 relative overflow-y-scroll scrollbar-hide"}>
     <button className={"fixed w-14 h-14 bg-white/50 rounded-full left-10 top-10 z-10"} onClick={() => router.back()}>
       <Image src={"/chat/arrow-left.svg"} alt={""} fill className={"object-cover p-3"}/>
     </button>
-    <div className={"w-full h-full relative"}>
-      { photoUrl && <Image src={photoUrl} alt={""} fill className={"w-full object-contain"} /> }
+    <div className={"w-full aspect-square relative"}>
+      { photoUrl && <Image src={photoUrl} alt={""} fill className={"w-full aspect-square object-contain"} /> }
     </div>
-    <div className={"absolute bottom-10 w-full flex flex-col items-center space-y-2.5"}>
-      <p className={"font-bold text-white/30 text-sm"}>아래로 스크롤해서 사진 정보 보기</p>
-      <Image src={"/photo-view/chevron-down.svg"} alt={""} width={50} height={50} />
-    </div>
-    <div className={"w-full text-white flex flex-col space-y-5 p-10"}>
+    <div className={"w-full text-white flex flex-col p-5"}>
       <p className={"text-xl text-white font-semibold mb-10"}>사진 정보</p>
       { metadata &&
-        Object.entries(metadata).map(([key, value]) => (
-          <div key={key} className={"flex space-x-2.5 wrap-break-word"}>
-            <p className={"w-32 text-sm font-medium"}>{key}</p>
-            <p className={"flex-1 text-white/60 text-sm"}>{typeof value === "string" ? String(value) : "-"}</p>
+        Object.entries(metadata).map(([key, value], index, array) => (
+          <div key={key} className={"flex wrap-break-word"}>
+            <div className={`w-32 text-sm font-medium bg-gray-900 p-2.5 text-gray-400 ${index === 0 && "rounded-tl-lg"} ${index === array.length - 1 && "rounded-bl-lg"}`}>{key}</div>
+            <div className={"p-2.5 flex-1 font-medium text-white/60 text-sm"}>{typeof value === "string" ? String(value) : "-"}</div>
           </div>
         ))
       }
