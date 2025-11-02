@@ -114,7 +114,15 @@ export async function POST(req: NextRequest) {
 
         sendJsonUpdate({ status: "uploading", message: "사진을 분석하고 있어요." });
         // Analyze the ORIGINAL photo for best quality
-        const result = await chat.sendMessage([parseDataUrl(photo)]);
+        const originalBase64Data = photoBuffer.toString("base64");
+        const originalMimeType = photoBlob.type;
+        const imagePart: Part = {
+          inlineData: {
+            data: originalBase64Data,
+            mimeType: originalMimeType,
+          },
+        };
+        const result = await chat.sendMessage([imagePart]);
         const reply = result.response.text(); // This is the JSON string from Gemini
 
         // --- Save to 'photos' table ---

@@ -452,7 +452,7 @@ export default function PersonaChat({
           <Camera photo={photo} setPhoto={setPhoto} />
         </div>
       ) : (
-        <div className={"w-full h-full bg-black flex items-center relative"}>
+        <div className={"w-full h-full bg-black flex items-center relative overflow-y-hidden"}>
           <div
             className={
               "w-14 aspect-square absolute top-5 left-5 bg-white/10 z-50 rounded-full flex items-center justify-center text-white cursor-pointer"
@@ -475,7 +475,7 @@ export default function PersonaChat({
             className="w-full h-fit object-contain sticky"
           />
           <div
-            className={"flex space-x-2.5 absolute bottom-10 font-medium w-full"}
+            className={"flex space-x-2.5 absolute bottom-10 font-medium w-full px-10"}
           >
             <button
               className={
