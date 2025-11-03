@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import SupabaseProvider from "@/context/SupabaseProvider";
+import GoogleAnalytics from "@/components/GoogleAnalytics";
+import {Analytics} from "@vercel/analytics/next";
 
 export const metadata: Metadata = {
   title: "Valyou.ai",
@@ -18,6 +20,8 @@ export default function RootLayout({
     <body
       className={`antialiased`}
     >
+    <Analytics />
+    <GoogleAnalytics />
     <SupabaseProvider>
       <div className={"w-svw min-h-[100dvh] bg-black flex justify-center"}>
         <div className={"w-full md:max-w-[500px] h-dvh bg-white"}>
