@@ -3,6 +3,7 @@ import "./globals.css";
 import SupabaseProvider from "@/context/SupabaseProvider";
 import GoogleAnalytics from "@/components/GoogleAnalytics";
 import {Analytics} from "@vercel/analytics/next";
+import {Suspense} from "react";
 
 export const metadata: Metadata = {
   title: "Valyou.ai",
@@ -21,7 +22,9 @@ export default function RootLayout({
       className={`antialiased`}
     >
     <Analytics />
-    <GoogleAnalytics />
+    <Suspense fallback={null}>
+      <GoogleAnalytics />
+    </Suspense>
     <SupabaseProvider>
       <div className={"w-svw min-h-[100dvh] bg-black flex justify-center"}>
         <div className={"w-full md:max-w-[500px] h-dvh bg-white"}>
