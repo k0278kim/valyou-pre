@@ -83,10 +83,6 @@ ${prompt}` }
       history: history.slice(firstIndex, -1) as Content[],
     });
 
-    history.forEach((h) => {
-      console.log(h.parts);
-    })
-
     // 7. 마지막 메시지(현재 메시지) 전송
     const result = await chat.sendMessage(messageContent);
     const reply = result.response.text();
