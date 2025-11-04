@@ -14,11 +14,9 @@ export async function POST(req: NextRequest) {
       };
 
       try {
-        // Assume persona object is sent for now, but fetching server-side is better
         const { persona, photo, prompt } = await req.json();
         const supabase = createClient();
 
-        // --- Authentication Check ---
         const {
           data: { user },
           error: authError,
@@ -88,7 +86,6 @@ export async function POST(req: NextRequest) {
           .toBuffer();
 
         const fileExt = "webp";
-        // Use non-nullable user.id
         const filePath = `${user.id}/${randomUUID}.${fileExt}`;
 
         sendJsonUpdate({ status: "uploading", message: "사진을 서버에 업로드 중이에요." });
@@ -177,7 +174,7 @@ export async function POST(req: NextRequest) {
         // Send final analysis result back
         sendJsonUpdate({ status: "complete", message: reply });
         controller.close();
-
+      //
       } catch (err: any) {
         console.error("❌ Chat API Error:", err);
         // Ensure error is sent before closing if not already sent

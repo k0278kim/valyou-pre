@@ -5,6 +5,12 @@ const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
       {
+        protocol: 'https',
+        hostname: 'yxedlmhisxzugnafzdet.supabase.co',
+        port: '',
+        pathname: '/storage/v1/object/sign/photos/**', // Supabase 스토리지 경로에 맞게 설정
+      },
+      {
         protocol: 'https', // 프로토콜 (http 또는 https)
         hostname: 'image.zeta-ai.io', // <--- 이 호스트 이름을 추가
         port: '', // 포트 번호 (없으면 빈 문자열)

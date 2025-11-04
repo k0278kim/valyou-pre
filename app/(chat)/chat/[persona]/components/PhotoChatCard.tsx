@@ -3,7 +3,7 @@ import Image from "next/image";
 import CircularLoader from "@/components/CircularLoader";
 import { motion } from "framer-motion";
 import {roundTransition} from "@/transitions/round_transition";
-import {ChatType} from "@/app/(protected)/(chat)/chat/[persona]/type/chat";
+import {ChatType} from "@/app/(chat)/chat/[persona]/type/chat";
 
 type PhotoChatCardType = {
   text: string;

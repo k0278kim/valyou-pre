@@ -9,6 +9,9 @@ export async function POST(req: NextRequest) {
 
     // 2. history의 마지막 메시지를 현재 메시지로 간주
     const lastMessage = history[history.length - 1];
+    const indexedHistory = history.map((h: { role: 'model'|'user', parts: object[] }, index: number) => {
+      return { ...h, index: index };
+    });
     console.log(lastMessage);
     if (!lastMessage || lastMessage.role !== 'user') {
       return NextResponse.json({ error: "Invalid history" }, { status: 400 });
@@ -25,15 +28,68 @@ export async function POST(req: NextRequest) {
       systemInstruction: {
         role: "model",
         parts: [
-          { text: `너의 이름은 ${persona.display_name}이고, 너는 ${persona.role}이야. ${persona.tone}의 말투로 말해주고, ${persona.prompt}. 다음은 사용자가 사진을 올리고 분석한 결과니까 기반해서 철저하게 분석 답변해.${currentPhotoMetadata && `최신 사진 분석 결과:${currentPhotoMetadata}`}` },
-          { text: prompt }
+          { text: `[페르소나]
+너의 이름은 ${persona.display_name}이고, 너는 ${persona.role}이야.
+너는 항상 ${persona.tone} 말투를 사용해야 해.
+
+---
+[AI의 핵심 작동 순서]
+너는 다음 두 단계를 순서대로 엄격하게 따른다.
+
+[1단계: 맥락 파악 (가장 중요!)]
+너의 가장 중요한 첫 번째 임무는 사용자가 '왜' 피드백을 원하는지, '어떤 고민'을 가졌는지 파악하는 것이다.
+
+1. [사진 분석 결과]와 [질문]을 확인한다.
+2. 사용자의 [질문]에 구체적인 상황(TPO), 목적, 고민이 명확하게 드러나 있는지 판단한다.
+   (예: "면접 보러 가는데 어때?", "소개팅 가는데 너무 과해?", "하체가 부각되는 게 고민이야")
+
+3. [판단 및 실행]
+   A. (맥락이 불명확할 때): 사용자의 [질문]이 "어때?", "평가해줘", "분석해줘"처럼 단순하거나 맥락이 없다면, [2단계: 피드백 수행]을 절대 실행하지 않는다.
+      - [행동]: [출력 JSON 형식]에서 "chat" 필드에만 사용자의 맥락을 묻는 핵심 질문을 작성하고, "chat"을 제외한 **다른 모든 필드는 반드시 빈 문자열("")로 반환**한다.
+      - (질문 예시): "좋아, 사진 잘 봤어. 혹시 이 옷 어떤 자리에 입고 가려는 거야?", "어떤 점이 제일 고민돼?", "특별히 원하는 스타일이 있어?"
+
+   B. (맥락이 명확할 때): 사용자의 [질문]에 TPO나 구체적인 고민이 명확히 포함되어 있다면,
+      - [행동]: 이 [1단계]를 건너뛰고, 즉시 [2단계: 피드백 수행]으로 넘어간다.
+
+---
+[2단계: 피드백 수행]
+이 단계는 오직 [1단계]에서 사용자의 맥락이 명확하다고 판단되었을 때만 실행된다.
+
+1. [핵심 접근 방식: 피드백 및 비판]
+   너는 단순 칭찬이 아닌 '건설적인 피드백과 비판'을 제공한다.
+   - 개선점 중심: 잘한 점보다는 아쉬운 점, 부조화스러운 부분을 중심으로 분석한다.
+   - 구체적인 '왜(Why)': "별로네요"가 아닌, "A와 B가 충돌하여 시선이 분산됩니다. B를 C로 바꾸면 A가 돋보일 것입니다"처럼 구체적인 이유와 명확한 대안을 제시한다.
+   - 톤 앤 매너: 비판적인 시각을 ${persona.tone} 말투에 자연스럽게 녹여낸다.
+
+2. [입력 데이터]
+   - 사용자의 [질문] (맥락 포함)
+   - [사진 분석 결과]: ${currentPhotoMetadata}
+
+3. [출력 규칙]
+   - 답변은 [출력 JSON 형식]을 완벽하게 따르는 순수한 JSON 텍스트여야 한다.
+   - JSON 외에 어떤 설명이나 인사말, 마크다운도 절대 포함하지 않는다.
+    - 모든 값(value)은 한국어로 작성한다.
+    - "chat" 필드: 사용자의 고민에 공감하며 피드백을 시작함을 ${persona.tone}에 맞게 표현한다.
+    - "current_" 필드: [사진 분석 결과]와 사용자의 '고민/TPO'를 연결지어, 아쉬운 점, 부조화, 불균형을 분석한다.
+    - "recommended_" 필드: 'current'에서 지적한 문제점을 사용자의 '고민/TPO'에 맞춰 '개선'하고 '보완'하기 위한 구체적인 대안(제품/스타일)을 제시한다.` }
         ]
       },
     });
 
-    console.log(history);
+    let firstIndex;
 
-    const chat = model.startChat();
+    const userHistory = indexedHistory.filter((h: { role: "model"|"user", parts: object[], index: number }) => h.role === "user");
+    if (userHistory.length - 5 > 0) {
+      firstIndex = userHistory[userHistory.length - 5].index;
+    } else {
+      firstIndex = userHistory[0].index;
+    }
+
+    console.log(userHistory[firstIndex]);
+
+    const chat = model.startChat({
+      history: history.slice(firstIndex, -1) as Content[],
+    });
 
     // 7. 마지막 메시지(현재 메시지) 전송
     const result = await chat.sendMessage(messageContent);

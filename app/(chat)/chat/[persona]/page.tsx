@@ -10,19 +10,19 @@ import {
 import Camera from "@/components/Camera";
 import { useRouter } from "next/navigation";
 import { Persona } from "@/model/Persona";
-import {PhotoChatCard} from "@/app/(protected)/(chat)/chat/[persona]/components/PhotoChatCard";
-import {TextChatCard} from "@/app/(protected)/(chat)/chat/[persona]/components/TextChatCard";
-import {LoadingIndicatorChat} from "@/app/(protected)/(chat)/chat/[persona]/components/LoadingIndicatorChat";
-import {BottomChat} from "@/app/(protected)/(chat)/chat/[persona]/components/BottomChat";
-import {FetchResponseType} from "@/app/(protected)/(chat)/chat/[persona]/type/fetchResponseType";
+import {PhotoChatCard} from "@/app/(chat)/chat/[persona]/components/PhotoChatCard";
+import {TextChatCard} from "@/app/(chat)/chat/[persona]/components/TextChatCard";
+import {LoadingIndicatorChat} from "@/app/(chat)/chat/[persona]/components/LoadingIndicatorChat";
+import {BottomChat} from "@/app/(chat)/chat/[persona]/components/BottomChat";
+import {FetchResponseType} from "@/app/(chat)/chat/[persona]/type/fetchResponseType";
 import {
   fetchChatAnalyzePrompt,
   fetchChatInitPrompt,
   fetchPhotoPrompt
-} from "@/app/(protected)/(chat)/chat/[persona]/utils/fetchChatPrompt";
-import {fetchPersonaAvatar} from "@/app/(protected)/(chat)/chat/[persona]/utils/fetchPersonaAvatar";
-import {ChatType} from "@/app/(protected)/(chat)/chat/[persona]/type/chat";
-import Header from "@/app/(protected)/(chat)/chat/[persona]/components/Header";
+} from "@/app/(chat)/chat/[persona]/utils/fetchChatPrompt";
+import {fetchPersonaAvatar} from "@/app/(chat)/chat/[persona]/utils/fetchPersonaAvatar";
+import {ChatType} from "@/app/(chat)/chat/[persona]/type/chat";
+import Header from "@/app/(chat)/chat/[persona]/components/Header";
 import { fileToBase64 } from "@/utils/image/fileToBase64";
 
 type HistoryPart = {
