@@ -137,6 +137,7 @@ export default function PersonaChat({
     fetchChatInitPrompt(supabase).then((response: FetchResponseType | undefined) => {
       if (response) {
         if (response.status === "success") setChatInitPrompt(response.message);
+        console.log(response.message);
       }
     });
   }, []);
@@ -346,14 +347,14 @@ export default function PersonaChat({
 
     const dataInit = await resInit.json();
     const reply = dataInit.reply;
-    const cleanedString = reply
-      .replaceAll("```json", "")
-      .replaceAll("`", "")
-      .trim();
-    const finalJsonObject = JSON.parse(cleanedString);
-    console.log(finalJsonObject.type)
+    // const cleanedString = reply
+    //   .replaceAll("```json", "")
+    //   .replaceAll("`", "")
+    //   .trim();
+    // const finalJsonObject = JSON.parse(cleanedString);
+    // console.log(finalJsonObject.type)
 
-      if (finalJsonObject.type === "ANALYZE") {
+      if (reply === "ANALYZE") {
         const res = await fetch("/api/chat", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
