@@ -80,7 +80,7 @@ export const PhotoChatCard = React.memo(function PhotoChatCard({
           <p>{finalJsonObject.summary}</p>
           { current && <div className={"grid grid-cols-2 gap-1"}>
             {
-              ["얼굴을 분석해줘", "헤어 스타일을 추천해줘", "이 옷은 어때?", "사진을 분석해줘"].map((item, index) => <NextChatButton text={item} sendMessage={sendMessage} key={index} />)
+              ["얼굴을 분석해줘", "헤어 스타일을 추천해줘", "이 옷은 어때?", "사진을 분석해줘"].map((item, index) => <NextChatButton text={item} loading={false} sendMessage={sendMessage} key={index} />)
             }
           </div> }
         </div>
@@ -91,12 +91,15 @@ export const PhotoChatCard = React.memo(function PhotoChatCard({
 
 type NextChatButtonProps = {
   text: string;
-  sendMessage: (message: string) => Promise<void>;
+  sendMessage: (message: string, analyze: boolean) => Promise<void>;
+  loading: boolean;
 }
 
-const NextChatButton = ({ text, sendMessage }: NextChatButtonProps) => {
+export const NextChatButton = ({ text, sendMessage, loading }: NextChatButtonProps) => {
   return <button onClick={async () => {
-    await sendMessage(text);
+    if (!loading) {
+      await sendMessage(text, true);
+    }
   }}
                  className={"rounded-lg p-2.5 bg-white border border-gray-300 text-sm font-medium"}>
     {text}

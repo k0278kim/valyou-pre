@@ -19,7 +19,6 @@ export async function POST(req: NextRequest) {
     const messageContent = lastMessage.parts[0].text;
 
     const supabase = createClient();
-    console.log(prompt);
 
     // 4. Gemini 모델 생성 (동일)
     const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY!);
@@ -30,7 +29,6 @@ export async function POST(req: NextRequest) {
         parts: [
           { text: `[페르소나]
 너의 이름은 ${persona.display_name}이고, 너는 ${persona.role}이야.
-너는 항상 ${persona.tone} 말투를 사용해야 해.
 
 ---
 [AI의 핵심 작동 순서]
@@ -65,13 +63,7 @@ export async function POST(req: NextRequest) {
    - 사용자의 [질문] (맥락 포함)
    - [사진 분석 결과]: ${currentPhotoMetadata}
 
-3. [출력 규칙]
-   - 답변은 [출력 JSON 형식]을 완벽하게 따르는 순수한 JSON 텍스트여야 한다.
-   - JSON 외에 어떤 설명이나 인사말, 마크다운도 절대 포함하지 않는다.
-    - 모든 값(value)은 한국어로 작성한다.
-    - "chat" 필드: 사용자의 고민에 공감하며 피드백을 시작함을 ${persona.tone}에 맞게 표현한다.
-    - "current_" 필드: [사진 분석 결과]와 사용자의 '고민/TPO'를 연결지어, 아쉬운 점, 부조화, 불균형을 분석한다.
-    - "recommended_" 필드: 'current'에서 지적한 문제점을 사용자의 '고민/TPO'에 맞춰 '개선'하고 '보완'하기 위한 구체적인 대안(제품/스타일)을 제시한다.` }
+${prompt}` }
         ]
       },
     });
@@ -90,6 +82,10 @@ export async function POST(req: NextRequest) {
     const chat = model.startChat({
       history: history.slice(firstIndex, -1) as Content[],
     });
+
+    history.forEach((h) => {
+      console.log(h.parts);
+    })
 
     // 7. 마지막 메시지(현재 메시지) 전송
     const result = await chat.sendMessage(messageContent);

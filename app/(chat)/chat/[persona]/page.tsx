@@ -91,6 +91,7 @@ export default function PersonaChat({
   const [hasFetchedMessages, setHasFetchedMessages] = useState(false);
   const [photoLoadingStatus, setPhotoLoadingStatus] = useState("");
   const [photoSource, setPhotoSource] = useState<"CAMERA"|"GALLERY"|null>(null);
+  const [recommendedNextQuestions, setRecommendedNextQuestions] = useState<string[]>([]);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -159,7 +160,7 @@ export default function PersonaChat({
     const histories: HistoryPart[] = messages.map((message) => {
       return {
         role: message.role === "user" ? "user" : "model",
-        parts: [{ text: message.content }],
+        parts: [{ text: message.content.replaceAll("deep_chat__", "") }],
       }
     });
     setHistory(histories)
@@ -224,15 +225,19 @@ export default function PersonaChat({
             } else {
               if (data[i].type === "ANALYZE") {
                 try {
-                  const cleanedString = data[i].content
+                  const cleanedString = (data[i].content.includes("{") ? ("{" + data[i].content.split("{")[1]) : data[i].content)
                     .replaceAll("```json", "")
                     .replaceAll("`", "")
                     .trim();
+                  console.log(cleanedString);
                   const finalJsonObject = JSON.parse(cleanedString);
                   const flatJsonObject = flattenObject(finalJsonObject);
-                  const resultArray: ChatType[] = Object.entries(flatJsonObject).filter(([key, value]) => value != "").map(([key, value]) => {
-                    return { type: "CHAT", role: "persona", content: `deep_chat__${key}__${value}`, photo: null }
+                  const resultArray: ChatType[] = Object.entries(flatJsonObject).filter(([key, value]) => value != "" && key != "recommended_next_question").map(([key, value]) => {
+                    return { type: "CHAT", role: "persona", content: `deep_chat__${value}`, photo: null }
                   });
+                  if (flatJsonObject['recommended_next_question']) {
+                    setRecommendedNextQuestions(flatJsonObject['recommended_next_question'].split("/"));
+                  }
                   mes = [...mes, ...resultArray];
                 } catch (e) {
                   console.log(e);
@@ -327,7 +332,7 @@ export default function PersonaChat({
     [personaCharacter, photoPrompt, supabase] // 💡 supabase 의존성 추가
   );
 
-  const sendMessage = useCallback(async (input: string) => {
+  const sendMessage = useCallback(async (input: string, analyze?: boolean) => {
     if (!input.trim()) return;
 
     setMessages((m) => [...m, { type: "CHAT", role: "user", content: input, photo: null }]);
@@ -347,14 +352,8 @@ export default function PersonaChat({
 
     const dataInit = await resInit.json();
     const reply = dataInit.reply;
-    // const cleanedString = reply
-    //   .replaceAll("```json", "")
-    //   .replaceAll("`", "")
-    //   .trim();
-    // const finalJsonObject = JSON.parse(cleanedString);
-    // console.log(finalJsonObject.type)
 
-      if (reply === "ANALYZE") {
+      if (reply === "ANALYZE" || analyze) {
         const res = await fetch("/api/chat", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -369,16 +368,20 @@ export default function PersonaChat({
 
       const data = await res.json();
       const reply = data.reply;
-      const cleanedString = reply
-        .replaceAll("```json", "")
-        .replaceAll("`", "")
-        .trim();
+      console.log("reply", reply);
+        const cleanedString = (reply.includes("{") ? "{" + reply.split("{")[1] : reply)
+          .replaceAll("```json", "")
+          .replaceAll("`", "")
+          .trim();
       const finalJsonObject = JSON.parse(cleanedString);
       const flatJsonObject = flattenObject(finalJsonObject);
       console.log(flatJsonObject);
-      const resultArray: ChatType[] = Object.entries(flatJsonObject).filter(([key, value]) => value != "").map(([key, value]) => {
-        return { type: "CHAT", role: "persona", content: `deep_chat__${key}__${value}`, photo: null }
+      const resultArray: ChatType[] = Object.entries(flatJsonObject).filter(([key, value]) => value != "" && key != "recommended_next_question").map(([key, value]) => {
+        return { type: "CHAT", role: "persona", content: `deep_chat__${value}`, photo: null }
       });
+      if (flatJsonObject['recommended_next_question']) {
+        setRecommendedNextQuestions(flatJsonObject['recommended_next_question'].split("/"));
+      }
       setLoading(false);
 
       if (data.reply) setMessages((m) => [...m, ...resultArray]);
@@ -457,6 +460,7 @@ export default function PersonaChat({
             handleFileChange={handleFileChange}
             openGallery={openGallery}
             fileInputRef={fileInputRef}
+            recommendedNextQuestions={recommendedNextQuestions}
           />
         </div>
       </div>

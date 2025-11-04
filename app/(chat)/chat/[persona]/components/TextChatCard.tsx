@@ -42,8 +42,8 @@ export const TextChatCard = React.memo(function TextChatCard({
             isUser ? "bg-gray-800 ml-auto text-white" : "bg-white border-gray-300"
           }`}
         >
-          { deepChat && <div className={"font-medium text-sm rounded-lg bg-gray-100 px-2 py-1 w-fit mb-4 mt-2 text-gray-800"}>{text.split("__")[1].replaceAll("_", " ")}</div> }
-          <p className="whitespace-pre-line text-sm">{deepChat ? text.split("__")[2] : text}</p>
+          {/*{ deepChat && <div className={"font-medium text-sm rounded-lg bg-gray-100 px-2 py-1 w-fit mb-4 mt-2 text-gray-800"}>{text.split("__")[1].replaceAll("_", " ")}</div> }*/}
+          <p className="whitespace-pre-line text-sm">{deepChat ? text.split("__")[1] : text}</p>
         </div>
       </div>
     </motion.div>
