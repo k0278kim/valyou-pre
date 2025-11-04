@@ -1,6 +1,6 @@
 'use client'
 
-import {useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import {createClient} from "@/utils/supabase/supabaseClient";
 import {Persona} from "@/model/Persona";
 import Image from "next/image";
@@ -29,16 +29,25 @@ const ChatListPage = () => {
   return <div className={"w-full h-full bg-white px-2"}>
     <p className={"p-5 mt-5 font-bold text-center text-xl"}>스타일리스트</p>
     <div className={"flex flex-col space-y-2"}>
-      <div className={"w-full p-5 rounded-lg bg-gray-100 text-sm space-y-2 flex flex-col items-center mb-10"}>
+      <div className={"w-full p-5 rounded-lg bg-gray-100 text-sm space-y-2 flex flex-col items-center mb-2.5"}>
         <p className={"font-semibold"}>Valyou는 당신의 숨겨진 아름다움을 찾기 위해 최선을 다하고 있어요!</p>
-        <p className={"text-center"}>이 실험은 10.30-11.05 동안 운영합니다.</p>
-        <button className={"p-2.5 border border-gray-300 rounded-lg bg-white text-sm"} onClick={() => router.push("/communicate-with-devs")}>
+        <p className={"text-center mb-5"}>Valyou 팀은 여러 실험을 통해 서비스를 개선하고 있어요.</p>
+        <button className={"p-2.5 rounded-lg bg-black text-sm text-white"} onClick={() => router.push("/communicate-with-devs")}>
           <div className={"font-semibold flex items-center space-x-2"}>
             <Image src={"/chat-list/envelope-open.svg"} alt={""} width={15} height={15} />
             <p>다음 실험이 나오면 알려주세요!</p>
           </div>
         </button>
       </div>
+      <button className={"w-full border border-gray-200 rounded-lg flex flex-col justify-center items-center mb-10"} onClick={() => {
+        window.open("https://open.kakao.com/o/sPpbZKZh");
+      }}>
+        <div className={"w-full h-44 relative border-b border-gray-200"}>
+          <Image src={"/profile/openchat-banner.png"} alt={""} fill className={"object-contain rounded-2xl"} />
+        </div>
+        <p className={"font-bold pt-3"}>개발자와 대화하기</p>
+        <p className={"text-sm pb-3"}>개발자의 카카오톡 오픈채팅방으로 연결됩니다.</p>
+      </button>
       {
         personas.map((persona, index) => <PersonaRoom key={index} persona={persona} index={index} />)
       }

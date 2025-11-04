@@ -2,11 +2,9 @@
 
 import { motion } from "framer-motion";
 import Image from "next/image";
-import ChatListPage from "@/app/(protected)/(bnb)/chat-list/page";
+import ChatListPage from "@/app/(bnb)/chat-list/page";
 import {useEffect, useState} from "react";
 import {usePathname, useRouter} from "next/navigation";
-import ProfilePage from "@/app/(protected)/(bnb)/profile/page";
-import GalleryPage from "@/app/(protected)/(bnb)/gallery/page";
 
 export const BottomNavigationBar = () => {
 
@@ -17,8 +15,6 @@ export const BottomNavigationBar = () => {
 
   const navItems = [
     { name: "채팅", href: "/chat-list", page: <ChatListPage />, icon: "/bnb/chat.svg", selected_icon: "/bnb/chat-selected.svg" },
-    { name: "사진", href: "/gallery", page: <GalleryPage />, icon: "/bnb/gallery.svg", selected_icon: "/bnb/gallery-selected.svg" },
-    { name: "프로필", href: "/profile", page: <ProfilePage />, icon: "/bnb/my.svg", selected_icon: "/bnb/my-selected.svg" }
   ];
 
   return <div className={"flex w-full h-20 bg-white border-t-[1px] border-t-gray-200 items-center justify-center rounded-t-xl px-5 py-3 space-x-10 relative"}>
