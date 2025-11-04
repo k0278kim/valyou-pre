@@ -66,15 +66,18 @@ const PersonaRoom = ({ persona, index }: PersonaRoom) => {
     initial={{ opacity: 0, translateY: "10%" }}
     animate={{ opacity: 1, translateY: 0 }}
     transition={{ delay: 0.05 * index }}
-    className={"w-full h-fit px-5 py-2 flex space-x-4 active:bg-gray-100 rounded-2xl"} onClick={() => router.push(`/chat/${persona.name}`)}>
-    <div className={"w-24 h-24 relative"}>
-    { persona.avatar_image ? <Image src={persona.avatar_image} alt={persona.display_name} fill className={"rounded-2xl object-cover"} /> : <div className={"w-24 h-24 bg-gray-100 rounded-2xl flex items-center justify-center"}>
-      <Image src={"/chat/user.svg"} alt={""} width={30} height={30} />
-    </div> }
-    </div>
-    <div className={"flex flex-col space-y-0.5 text-start justify-center flex-1"}>
-      <p className={"font-bold text"}>{persona.display_name}</p>
-      <p className={"text-gray-700 text-xs"}>{persona.role}</p>
+    className={"w-full h-fit px-5 py-2 flex flex-col space-y-4 active:bg-gray-100 rounded-2xl"} onClick={() => router.push(`/chat/${persona.name}`)}>
+    <div className={"w-full aspect-square relative"}>
+      { persona.avatar_image ? <Image src={persona.avatar_image} alt={persona.display_name} fill className={"rounded-2xl object-cover"} /> : <div className={"w-24 h-24 bg-gray-100 rounded-2xl flex items-center justify-center"}>
+        <Image src={"/chat/user.svg"} alt={""} width={30} height={30} />
+      </div>
+      }
+      <div className={"w-full h-fit absolute bottom-0 flex flex-col space-y-4 p-7 bg-gradient-to-b from-black/0 to-black/100 rounded-b-2xl"}>
+        <div className={"flex flex-col space-y-2 text-start justify-center flex-1"}>
+          <p className={"font-bold text-2xl text-white"}>{persona.display_name}</p>
+          <p className={"text-white/60"}>{persona.role}</p>
+        </div>
+      </div>
     </div>
   </motion.button>
 }
